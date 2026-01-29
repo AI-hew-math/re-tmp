@@ -84,17 +84,39 @@ created: $DATE
 Extends $PARENT_ID.
 
 ## Hypothesis
-(Write hypothesis)
+<!-- FILL BEFORE RUNNING: What do you expect and why? -->
+
 
 ## Method
-(Write method)
+<!-- What specifically are you changing from the parent? -->
+
+
+## Success Criteria
+<!-- How will you measure if this worked? -->
+- [ ] Metric improves by X%
+- [ ] Training converges faster
+- [ ] ...
 
 ## References
 <!-- Cite papers from literature/papers.yaml using [@key] -->
-<!-- Example: Based on [@transformer] attention mechanism -->
+
+
+---
 
 ## Results
-(To be filled)
+<!-- FILL AFTER RUNNING -->
+
+### Metrics
+| Metric | Expected | Actual |
+|--------|----------|--------|
+| | | |
+
+### Observations
+
+
+### Conclusion
+<!-- Hypothesis confirmed/rejected? What's next? -->
+
 EOF
 
 # 4. Update graph

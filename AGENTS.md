@@ -73,56 +73,96 @@ python3 scripts/submit.py --experiment EXP001 --device "1x3090" --cluster soda
 ```
 CIFAR-10 downloads automatically. Expected: ~85% accuracy in 50 epochs.
 
-## Workflow (SOP)
+## Research Loop
 
-### Creating a New Experiment
+The core workflow follows the scientific method:
 
-**NEVER** manually create experiment files. Use the scaffolding script:
-```bash
-./scripts/create_experiment.sh EXP002 EXP001 "Brief description of changes"
+```
+Understand Context → Design Experiment → Document Hypothesis → Run → Log Results
 ```
 
-This creates:
-- `src/experiments/EXP002/model.py` - Implementation
+### 1. Understand Context (First Session)
+
+Before any experiments, understand the research:
+- What problem is the user solving?
+- What papers are relevant? (Add to `literature/papers.yaml`)
+- What has been tried? What's the baseline?
+
+**Ask questions until you fully understand the research direction.**
+
+### 2. Design Experiment
+
+Either:
+- **User-driven**: "Let's test if attention helps" → you implement
+- **Agent-suggested**: Based on context, suggest logical next steps
+
+### 3. Document BEFORE Running
+
+**CRITICAL**: Before running, the experiment README must have:
+- **Hypothesis**: What do you expect to happen and why?
+- **Method**: What specifically are you changing?
+- **Success criteria**: How will you know if it worked?
+
+This is non-negotiable. No undocumented experiments.
+
+### 4. Create Experiment
+
+```bash
+./scripts/create_experiment.sh EXP002 EXP001 "Brief description"
+```
+
+Creates:
+- `src/experiments/EXP002/model.py` - Implementation (copied from parent)
 - `configs/experiment/EXP002.yaml` - Hyperparameters
 - `experiments/EXP002/README.md` - Documentation
 
-### Implementing Changes
+### 5. Implement & Validate
 
 1. **Edit model**: `src/experiments/EXPXXX/model.py`
-   - MUST inherit from `src.core.base_model.BaseModel`
-   - Override `__init__` to define architecture
-   - Override step methods only if necessary
-
 2. **Edit config**: `configs/experiment/EXPXXX.yaml`
-   - **NEVER** hardcode hyperparameters in Python
-   - Use Hydra config overrides
+3. **Validate**: `python3 scripts/validate.py EXPXXX`
 
-### Validation
-
-Before committing, verify experiment structure:
-```bash
-python3 scripts/validate.py EXPXXX
-```
-
-### Submission
+### 6. Submit
 
 ```bash
-# 1. Check GPU availability
-python3 scripts/check_servers.py
-
-# 2. Commit and push
+python3 scripts/check_servers.py  # Check GPU availability
 git add -A && git commit -m "EXP002: description" && git push
 
-# 3. On cluster: pull and submit
-ssh vegi
-cd /workspace/$USER/<repo>
+# On cluster
+ssh vegi && cd /workspace/$USER/<repo>
 git pull && uv sync
 python3 scripts/submit.py --experiment EXP002 --device "4x3090" --cluster soda
-
-# Interactive debug shell
-python3 scripts/submit.py --experiment EXP002 --device "1x3090" --interactive
 ```
+
+### 7. Log Results (CRITICAL)
+
+After experiment completes:
+
+1. **Update experiment README** with actual results:
+   ```markdown
+   ## Results
+   - Accuracy: X% (expected Y%)
+   - Training time: Z hours
+   - Observations: ...
+   
+   ## Conclusion
+   Hypothesis [confirmed/rejected]. Next: ...
+   ```
+
+2. **Update STATUS.md**:
+   - Change status: `planned` → `running` → `done`
+   - Add to History section
+
+3. **Commit**: `git commit -m "EXP002: results - [brief finding]"`
+
+### Experiment Lifecycle
+
+| Phase | README Status | STATUS.md |
+|-------|---------------|-----------|
+| Designed | Hypothesis filled | `planned` |
+| Running | - | `running` |
+| Complete | Results filled | `done` |
+| Failed | Results + why | `failed` |
 
 ## Code Style
 

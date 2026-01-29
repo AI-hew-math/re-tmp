@@ -1,0 +1,3 @@
+_target_: src.core.base_model.BaseModel
+lr: 1e-3
+weight_decay: 1e-5

@@ -1,0 +1,5 @@
+_target_: src.core.base_data.BaseDataModule
+data_dir: "/data/gankim/datasets"
+batch_size: 64
+num_workers: 4
+pin_memory: True

@@ -1,0 +1,7 @@
+# @package _global_
+defaults:
+  - override /model: default
+
+experiment_name: "EXP001"
+model:
+  _target_: src.experiments.EXP001.model.Model

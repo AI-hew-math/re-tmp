@@ -13,9 +13,24 @@ from pathlib import Path
 
 # Default LAIT Lab configuration
 DEFAULT_CLUSTERS = [
-    {"name": "soda", "partitions": ["R3090", "A100"], "gpus": "10x 3090, 8x A100"},
-    {"name": "vegi", "partitions": ["R4090", "A6000", "RTXPRO6000"], "gpus": "16x 4090, 8x A6000, 16x Pro6000"},
-    {"name": "potato", "partitions": ["A6000"], "gpus": "12x A6000"},
+    {
+        "name": "soda",
+        "partitions": ["R3090", "A100"],
+        "gpus": "10x 3090, 8x A100",
+        "devices": ["1x3090", "2x3090", "4x3090", "1xa100", "2xa100", "4xa100"],
+    },
+    {
+        "name": "vegi",
+        "partitions": ["R4090", "A6000", "RTXPRO6000"],
+        "gpus": "16x 4090, 8x A6000, 16x Pro6000 (96GB)",
+        "devices": ["1x4090", "2x4090", "4x4090", "8x4090", "1xa6000", "2xa6000", "4xa6000", "1xpro6000", "2xpro6000"],
+    },
+    {
+        "name": "potato",
+        "partitions": ["A6000"],
+        "gpus": "12x A6000",
+        "devices": ["1xa6000", "2xa6000", "4xa6000"],
+    },
 ]
 
 DEFAULT_PATHS = {
@@ -37,8 +52,8 @@ def prompt_choice(msg: str, options: list[str], default: int = 0) -> str:
     """Prompt user to choose from options."""
     print(f"\n{msg}")
     for i, opt in enumerate(options):
-        marker = "(default) " if i == default else ""
-        print(f"  [{i + 1}] {marker}{opt}")
+        marker = " (default)" if i == default else ""
+        print(f"  [{i + 1}] {opt}{marker}")
 
     while True:
         val = input(f"Choice [1-{len(options)}]: ").strip()
@@ -97,15 +112,22 @@ def main():
                 break
             partitions = prompt(f"  Partitions for {name} (comma-sep)", "gpu").split(",")
             gpus = prompt(f"  GPU description", "8x A100")
+            devices = prompt(f"  Device options (comma-sep, e.g., '1xa100,2xa100,4xa100')", "1xa100,2xa100,4xa100").split(",")
             clusters.append({
                 "name": name.strip(),
                 "partitions": [p.strip() for p in partitions],
-                "gpus": gpus.strip()
+                "gpus": gpus.strip(),
+                "devices": [d.strip() for d in devices],
             })
 
         if not clusters:
             print("No clusters defined. Using local-only mode.")
-            clusters = [{"name": "local", "partitions": ["default"], "gpus": "local GPU"}]
+            clusters = [{
+                "name": "local",
+                "partitions": ["default"],
+                "gpus": "local GPU",
+                "devices": ["1xgpu"],
+            }]
 
         print("\nStorage paths:")
         paths = {
@@ -123,10 +145,19 @@ def main():
     print("PREFERENCES")
     print("─" * 40)
 
-    cluster_names = [c["name"] for c in clusters]
-    default_cluster = prompt_choice("Default cluster for job submission:", cluster_names, 0)
+    # Select default cluster
+    cluster_names = [f"{c['name']} ({c['gpus']})" for c in clusters]
+    cluster_choice = prompt_choice("Default cluster for job submission:", cluster_names, 0)
+    default_cluster_idx = cluster_names.index(cluster_choice)
+    default_cluster = clusters[default_cluster_idx]["name"]
 
-    default_device = prompt("Default GPU device (e.g., '1x3090', '4xa100')", "1x3090")
+    # Select default device based on chosen cluster
+    available_devices = clusters[default_cluster_idx]["devices"]
+    default_device = prompt_choice(
+        f"Default GPU device for {default_cluster}:",
+        available_devices,
+        0
+    )
 
     # 4. Literature Management
     print("\n" + "─" * 40)
@@ -145,7 +176,7 @@ Project:        {project_name}
 Description:    {project_desc}
 WandB Project:  {wandb_project}
 
-Clusters:       {', '.join(cluster_names)}
+Clusters:       {', '.join(c['name'] for c in clusters)}
 Default:        {default_cluster}
 Default Device: {default_device}
 
@@ -187,6 +218,7 @@ clusters:
         site_yaml += f"""  - name: "{c['name']}"
     partitions: {c['partitions']}
     gpus: "{c['gpus']}"
+    devices: {c['devices']}
 """
 
     Path("configs/site.yaml").write_text(site_yaml)

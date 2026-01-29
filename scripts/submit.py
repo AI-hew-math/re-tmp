@@ -8,6 +8,7 @@ def submit():
     parser.add_argument("--experiment", type=str, required=True)
     parser.add_argument("--device", type=str, default="1x3090")
     parser.add_argument("--cluster", type=str, default="soda")
+    parser.add_argument("--interactive", action="store_true", help="Print srun command for interactive debugging")
     args = parser.parse_args()
 
     # Hardware Mapping (Simplistic example)
@@ -20,6 +21,12 @@ def submit():
     }
     
     partition, gres = gpu_map.get(args.device.lower(), ("R3090", 1))
+
+    if args.interactive:
+        print(f"\n--- Interactive Debug Command ({args.cluster}) ---")
+        print(f"srun -p {partition} --gres=gpu:{gres} --pty /bin/bash")
+        print("--------------------------------------------------\n")
+        return
 
     job_name = args.experiment
     log_file = f"logs/slurm/{job_name}_%j.log"

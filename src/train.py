@@ -38,7 +38,8 @@ def train(cfg: DictConfig) -> None:
             dirpath=os.path.join(cfg.output_dir, "checkpoints"),
             monitor="val/loss",
             mode="min",
-            save_top_k=1
+            save_top_k=1,
+            save_last=True,  # Required for auto-resume
         ),
         RichProgressBar()
     ]
@@ -51,8 +52,17 @@ def train(cfg: DictConfig) -> None:
         default_root_dir=cfg.output_dir
     )
 
-    # 7. Execute
-    trainer.fit(model=model, datamodule=datamodule)
+    # 7. Auto-Resume Logic
+    ckpt_path = None
+    if os.path.isdir(os.path.join(cfg.output_dir, "checkpoints")):
+        last_ckpt = os.path.join(cfg.output_dir, "checkpoints", "last.ckpt")
+        if os.path.exists(last_ckpt):
+            print(f"Resuming from checkpoint: {last_ckpt}")
+            ckpt_path = last_ckpt
+
+    # 8. Execute
+    print("Starting training...")
+    trainer.fit(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
 
 if __name__ == "__main__":
     train()

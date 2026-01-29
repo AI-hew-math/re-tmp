@@ -91,6 +91,9 @@ Agents **MUST** follow these steps to ensure research integrity:
     
     # Submit job (automates sbatch)
     python3 scripts/submit.py --experiment EXPXXX --device "4x3090" --cluster soda
+    
+    # Get interactive debug shell (srun)
+    python3 scripts/submit.py --experiment EXPXXX --device "1x3090" --interactive
     ```
 
 ### 8. Monitoring & Results

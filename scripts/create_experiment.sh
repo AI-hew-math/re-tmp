@@ -11,22 +11,51 @@ PARENT_ID=$2
 DESC=$3
 DATE=$(date +%Y-%m-%d)
 
-# 1. Source skeleton
+# 1. Source skeleton - copy from parent if it exists
 mkdir -p src/experiments/$NEW_ID
 touch src/experiments/$NEW_ID/__init__.py
-cat <<EOF > src/experiments/$NEW_ID/model.py
+
+PARENT_MODEL="src/experiments/$PARENT_ID/model.py"
+if [ -f "$PARENT_MODEL" ] && [ "$PARENT_ID" != "ROOT" ]; then
+    # Copy parent model as starting point
+    cp "$PARENT_MODEL" src/experiments/$NEW_ID/model.py
+    # Update docstring
+    sed -i '' "s/$PARENT_ID/$NEW_ID/g" src/experiments/$NEW_ID/model.py 2>/dev/null || \
+    sed -i "s/$PARENT_ID/$NEW_ID/g" src/experiments/$NEW_ID/model.py
+    echo "  Copied model from $PARENT_ID (modify as needed)"
+else
+    # Create skeleton with guidance
+    cat <<EOF > src/experiments/$NEW_ID/model.py
+"""
+$NEW_ID: $DESC
+Parent: $PARENT_ID
+
+TODO: Implement your experiment changes here.
+See src/experiments/EXP001/model.py for a complete example.
+"""
 from src.core.base_model import BaseModel
 import torch.nn as nn
 
+
 class Model(BaseModel):
     """
-    $NEW_ID: $DESC
-    Inherited from $PARENT_ID
+    $DESC
+    
+    Changes from parent ($PARENT_ID):
+    - TODO: List what you're changing
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        # TODO: Implement experiment logic
+        # TODO: Define your architecture
+        # Example:
+        # self.net = nn.Sequential(
+        #     nn.Linear(784, 256),
+        #     nn.ReLU(),
+        #     nn.Linear(256, 10)
+        # )
+        raise NotImplementedError("Implement your model architecture")
 EOF
+fi
 
 # 2. Config override
 cat <<EOF > configs/experiment/$NEW_ID.yaml

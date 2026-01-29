@@ -29,8 +29,11 @@ uv run python3 scripts/setup.py
 cp .env.example .env
 # Edit .env and add your WANDB_API_KEY
 
-# 5. Verify everything works
-uv run python3 src/train.py experiment=EXP001 trainer.accelerator=cpu trainer.fast_dev_run=true
+# 5. Verify everything works (local machine)
+uv run python3 src/train.py experiment=EXP001 trainer.accelerator=cpu trainer.fast_dev_run=true data.data_dir=/tmp/data
+
+# On cluster (uses /data/$USER/datasets by default)
+uv run python3 src/train.py experiment=EXP001 trainer.fast_dev_run=true
 ```
 
 ## Using with AI Coding Agents
@@ -163,6 +166,20 @@ source ~/.bashrc  # or restart terminal
 ```bash
 uv sync  # Ensure dependencies are installed
 uv run python3 <script>  # Use uv run, not python3 directly
+```
+
+**`Error locating target 'src.core...'` or import errors**
+```bash
+# Re-sync to install package in editable mode
+uv sync
+# Or reinstall
+uv pip install -e .
+```
+
+**`/data` path doesn't exist (local testing)**
+```bash
+# Override data_dir for local machines
+uv run python3 src/train.py experiment=EXP001 data.data_dir=/tmp/data ...
 ```
 
 **Can't connect to cluster**

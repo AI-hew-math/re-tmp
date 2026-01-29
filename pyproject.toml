@@ -15,3 +15,10 @@ dependencies = [
     "torchvision>=0.25.0",
     "wandb>=0.24.0",
 ]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.yaml"]

@@ -177,7 +177,10 @@ model:
 # Validate experiment structure
 python3 scripts/validate.py EXPXXX
 
-# Dry run (CPU, 1 batch)
+# Dry run on LOCAL MACHINE (uses /tmp for data)
+uv run python3 src/train.py experiment=EXPXXX trainer.accelerator=cpu trainer.fast_dev_run=true data.data_dir=/tmp/data
+
+# Dry run on CLUSTER (uses /data/$USER/datasets)
 uv run python3 src/train.py experiment=EXPXXX trainer.accelerator=cpu trainer.fast_dev_run=true
 ```
 

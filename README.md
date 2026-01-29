@@ -38,7 +38,7 @@ We use `uv` for fast, reproducible environment management.
 
 Agents **MUST** follow these steps to ensure research integrity:
 
-1.  **Read Context**: Check `STATUS.md` for current experiment graph and `index.md` for project goals.
+1.  **Read Context**: Check `STATUS.md` for current experiment graph and this `README.md` for project goals.
 2.  **Scaffold**:
     ```bash
     ./scripts/create_experiment.sh EXPXXX PARENT_ID "Description"
@@ -73,4 +73,3 @@ Every experiment must declare a `parent` in its `README.md` to maintain the grap
 
 ---
 **Maintained by:** Ganghyun Kim (Kyle Kim)
-**References:** [[dl-template-plan]], [[server-specs]], [[LAIT-Server-Onboarding]]

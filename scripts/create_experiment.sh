@@ -52,7 +52,7 @@ created: $DATE
 # $NEW_ID: $DESC
 
 ## Context
-Extends [[$PARENT_ID]].
+Extends $PARENT_ID.
 
 ## Hypothesis
 (Write hypothesis)

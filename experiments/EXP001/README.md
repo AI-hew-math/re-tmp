@@ -8,7 +8,7 @@ created: 2026-01-29
 # EXP001: Baseline Experiment
 
 ## Context
-Extends [[ROOT]].
+Extends ROOT.
 
 ## Hypothesis
 (Write hypothesis)

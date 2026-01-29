@@ -20,14 +20,31 @@ Jobs should be submitted to the following SLURM clusters:
 - **Local Scratch**: `/data/gankim` (High-speed storage for datasets specific to that cluster). **Use this for active training data.**
 - **Shared**: `/nas1`, `/nas2` (Archival datasets and cross-cluster storage).
 
-### 1.3 Credentials
+## 2. Deployment & Setup
+
+### 2.1 First-time Setup
+1.  **Local**: Develop and commit your code.
+2.  **Server**: SSH to a cluster (e.g., `ssh vegi`).
+3.  **Clone**: 
+    ```bash
+    # ALWAYS place code in /workspace for persistence and performance
+    cd /workspace/gankim
+    git clone <your-repo-url>
+    cd <repo-name>
+    ```
+4.  **Environment**: 
+    ```bash
+    uv sync
+    ```
+
+### 2.2 Credentials
 Run the following to ensure the server is ready for training:
 ```bash
 # Check if WANDB_API_KEY and other tokens are set
 python3 scripts/check_creds.py
 ```
 
-## 2. Environment (uv)
+## 3. Environment (uv)
 We use `uv` for fast, reproducible environment management.
 
 - **Local Setup**: `uv sync`

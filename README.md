@@ -2,6 +2,16 @@
 
 Standardized PyTorch Lightning template for LAIT Lab experiments. Designed for reproducibility and **AI coding agent compatibility**.
 
+## Prerequisites
+
+- **Python 3.11+** (check: `python3 --version`)
+- **uv** - Fast Python package manager ([install](https://docs.astral.sh/uv/getting-started/installation/))
+  ```bash
+  # macOS/Linux
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  ```
+- **WandB account** (optional but recommended) - [wandb.ai](https://wandb.ai)
+
 ## Quick Start
 
 ```bash
@@ -12,10 +22,14 @@ cd my-project
 # 2. Install dependencies
 uv sync
 
-# 3. Run interactive setup
+# 3. Run interactive setup (configures clusters, paths, WandB)
 uv run python3 scripts/setup.py
 
-# 4. Verify everything works
+# 4. Set up credentials
+cp .env.example .env
+# Edit .env and add your WANDB_API_KEY
+
+# 5. Verify everything works
 uv run python3 src/train.py experiment=EXP001 trainer.accelerator=cpu trainer.fast_dev_run=true
 ```
 
@@ -76,7 +90,8 @@ Agent: [Updates literature/related-work.md with paper details]
 |------|---------|
 | `AGENTS.md` | **Primary instructions** - agents read this first |
 | `STATUS.md` | Current experiment graph and active thread |
-| `literature/related-work.md` | Paper survey and references |
+| `literature/papers.yaml` | Paper database (metadata, repos, links) |
+| `literature/papers/<key>.md` | Detailed paper notes with full content |
 
 ## Features
 
@@ -85,20 +100,34 @@ Agent: [Updates literature/related-work.md with paper details]
 - **Scaffolding** - `./scripts/create_experiment.sh` auto-generates structure
 - **SLURM integration** - Smart submission via `scripts/submit.py`
 - **WandB logging** - Automatic if `WANDB_API_KEY` is set
-- **Literature tracking** - `literature/related-work.md` for paper management
+- **Literature tracking** - `papers.yaml` database + detailed notes with full paper content
+- **Arxiv integration** - Auto-fetch paper metadata and tex source
 
 ## Structure
 
 ```
-├── AGENTS.md           # Agent instructions (read this!)
-├── STATUS.md           # Experiment graph
+├── AGENTS.md              # Agent instructions (read this!)
+├── STATUS.md              # Experiment graph + history
 ├── src/
-│   ├── core/           # Base classes (don't modify)
-│   └── experiments/    # Your experiment implementations
-├── configs/            # Hydra configurations
-├── experiments/        # Documentation per experiment
-├── literature/         # Related work and paper notes
-└── scripts/            # Automation tools
+│   ├── core/              # Base classes (don't modify)
+│   │   ├── base_model.py  # Inherit for all models
+│   │   └── base_data.py   # Inherit for all datasets
+│   ├── experiments/       # Your experiment implementations
+│   │   └── EXP001/        # One folder per experiment
+│   └── train.py           # Main training entry point
+├── configs/
+│   ├── config.yaml        # Root config
+│   ├── experiment/        # Per-experiment overrides
+│   ├── model/             # Model configs
+│   ├── data/              # Dataset configs
+│   └── trainer/           # Trainer configs
+├── experiments/           # Documentation per experiment
+│   └── EXP001/README.md   # Hypothesis, method, results
+├── literature/
+│   ├── papers.yaml        # Paper database
+│   ├── papers/            # Detailed notes per paper
+│   └── index.md           # Auto-generated citation index
+└── scripts/               # Automation tools
 ```
 
 ## For Humans (Without AI Agent)
@@ -117,8 +146,45 @@ Agent: [Updates literature/related-work.md with paper details]
 | `scripts/create_experiment.sh` | Scaffold new experiment |
 | `scripts/validate.py` | Verify experiment structure |
 | `scripts/submit.py` | Submit SLURM jobs |
-| `scripts/check_servers.py` | Check GPU availability |
+| `scripts/check_servers.py` | Check GPU availability across clusters |
 | `scripts/check_creds.py` | Verify credentials are set |
+| `scripts/fetch_paper.py` | Fetch arxiv paper metadata + tex source |
+| `scripts/lit_index.py` | Generate literature citation index |
+
+## Troubleshooting
+
+**`uv: command not found`**
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source ~/.bashrc  # or restart terminal
+```
+
+**`ModuleNotFoundError` when running scripts**
+```bash
+uv sync  # Ensure dependencies are installed
+uv run python3 <script>  # Use uv run, not python3 directly
+```
+
+**Can't connect to cluster**
+```bash
+# Verify SSH config
+ssh soda  # Should connect without password prompt
+# If not, set up SSH keys: ssh-copy-id soda
+```
+
+**WandB not logging**
+```bash
+# Check credentials
+uv run python3 scripts/check_creds.py
+# Ensure .env has WANDB_API_KEY
+```
+
+**SLURM job fails immediately**
+```bash
+# Check the log
+cat logs/slurm/EXPXXX_*.log
+# Common issues: wrong partition, missing data, OOM
+```
 
 ---
-**Maintained by:** Ganghyun Kim (Kyle Kim)
+**Maintained by:** LAIT Lab

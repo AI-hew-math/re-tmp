@@ -35,16 +35,16 @@ resnet:
 # Relevant Techniques  
 # =============================================================================
 
-# transformer:
-#   title: "Attention Is All You Need"
-#   authors: "Vaswani et al."
-#   year: 2017
-#   venue: NeurIPS
-#   arxiv: "1706.03762"
-#   repo: "https://github.com/tensorflow/tensor2tensor"
-#   tags: [attention, architecture]
-#   notes: "Self-attention mechanism"
-#   details: papers/transformer.md
+transformer:
+  title: "Attention Is All You Need"
+  authors: "Vaswani et al."
+  year: 2017
+  venue: NeurIPS
+  arxiv: "1706.03762"
+  repo: "https://github.com/tensorflow/tensor2tensor"
+  tags: [attention, architecture, foundation]
+  notes: "Self-attention replaces recurrence entirely"
+  details: papers/transformer.md
 
 # =============================================================================
 # Benchmarks & Datasets

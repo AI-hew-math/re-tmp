@@ -17,8 +17,17 @@ Jobs should be submitted to the following SLURM clusters:
 
 ### 1.2 Storage Hierarchy
 - **Home**: `/workspace/gankim` (Code, config, `uv` virtualenvs).
-- **Local Scratch**: `/data/gankim` (High-speed storage for datasets specific to that cluster). **Use this for active training data.**
-- **Shared**: `/nas1`, `/nas2` (Archival datasets and cross-cluster storage).
+- **Local Scratch**: `/data/gankim` (High-speed storage). **Training data MUST be here.**
+- **Shared**: `/nas1`, `/nas2` (Archival datasets).
+
+### 1.3 Data Preparation (Essential)
+Agents must copy data from slow NAS to fast Local Scratch before training:
+```bash
+# Example: Sync dataset to local scratch
+rsync -av /nas1/public/datasets/my_dataset /data/gankim/
+```
+
+### 1.4 Credentials
 
 ## 2. Deployment & Setup
 
@@ -83,6 +92,18 @@ Agents **MUST** follow these steps to ensure research integrity:
     # Submit job (automates sbatch)
     python3 scripts/submit.py --experiment EXPXXX --device "4x3090" --cluster soda
     ```
+
+### 8. Monitoring & Results
+- **Logs**: If a job fails immediately, check SLURM logs:
+  ```bash
+  tail -f logs/slurm/*.log
+  ```
+- **WandB**: Primary training metrics.
+- **Artifacts**: Checkpoints save to `outputs/EXPXXX/...`.
+- **Retrieval**: Sync results back to local machine:
+  ```bash
+  rsync -avz <cluster>:~/workspace/gankim/dl-template/outputs/ ./outputs/
+  ```
 
 ## 4. Experiment Tracking
 Lineage is tracked in `STATUS.md` via a Mermaid graph. 

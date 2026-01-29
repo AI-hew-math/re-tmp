@@ -36,7 +36,11 @@ def submit():
 
 # Load environment
 source .env
-uv run python3 src/train.py experiment={args.experiment} trainer.devices={gres}
+CMD="uv run python3 src/train.py experiment={args.experiment} trainer.devices={gres}"
+if [ {gres} -gt 1 ]; then
+  CMD="$CMD trainer.strategy=ddp"
+fi
+$CMD
 """
 
     script_path = f".tmp_submit_{args.experiment}.slurm"

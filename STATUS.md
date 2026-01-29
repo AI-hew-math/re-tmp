@@ -4,14 +4,17 @@
 
 ```mermaid
 graph TD
-    ROOT --> EXP001
+    ROOT[Baseline] --> EXP001
 ```
 
 ## Active Thread
-**Current Goal:** Initial template setup and verification.
+**Current Goal:** Template ready for use. Create new experiments branching from EXP001.
 
-## Queue
-- [ ] **EXP000**: Template verification run. (Planned)
+## Experiments
+
+| ID | Parent | Status | Description |
+|----|--------|--------|-------------|
+| EXP001 | ROOT | ✅ done | CIFAR-10 CNN baseline (~85% acc) |
 
 ## History
-*(No history yet)*
+- **EXP001**: Baseline CNN verified. Template functional.

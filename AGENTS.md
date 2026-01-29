@@ -237,34 +237,58 @@ rsync -avz vegi:/workspace/$USER/<repo>/outputs/ ./outputs/
 
 ## Literature Management
 
+Literature is **integrated** with experiments, not a separate concern.
+
 ### Structure
 ```
 literature/
-└── related-work.md    # Main survey document
+├── README.md          # How literature works
+├── papers.yaml        # Paper database (structured)
+├── related-work.md    # Survey narrative (created by setup.py)
+└── index.md           # Auto-generated reverse index
 ```
 
-### related-work.md Format
-Organize papers by category with tables:
+### Paper Database (`papers.yaml`)
+Add papers with structured metadata:
+```yaml
+transformer:
+  title: "Attention Is All You Need"
+  authors: "Vaswani et al."
+  year: 2017
+  venue: NeurIPS
+  arxiv: "1706.03762"
+  tags: [attention, architecture]
+  notes: "Self-attention mechanism"
+```
+
+### Citing in Experiments
+In `experiments/EXPXXX/README.md`, use `[@key]` citations:
 ```markdown
-## 1. Core Methods
-| Method | Year | Venue | Key Idea | Notes |
-|--------|------|-------|----------|-------|
-| Paper A | 2024 | NeurIPS | Description | Link |
-
-### References
-- [Paper A (arXiv:XXXX.XXXXX)](https://arxiv.org/abs/XXXX.XXXXX)
+## References
+- [@transformer] - Using self-attention for feature extraction
+- [@resnet] - Baseline comparison
 ```
 
-### Linking Papers to Experiments
-In `experiments/EXPXXX/README.md`, include:
-```markdown
-## Paper Use
-Demonstrates X (cite: Paper A, Paper B).
-Answers reviewer question about Y.
+### Generating the Index
+After adding citations, regenerate the reverse index:
+```bash
+python scripts/lit_index.py
 ```
 
-### Adding Papers
-When you find a relevant paper:
-1. Add entry to appropriate section in `literature/related-work.md`
-2. Include: Method name, Year, Venue, Key idea, arXiv link
-3. Note relevance to your work in "Our Positioning" section
+This creates `literature/index.md` showing:
+- Which experiments cite which papers
+- Uncited papers (in database but never used)
+- Missing papers (cited but not in database)
+
+### Workflow
+1. **Find relevant paper** → Add to `papers.yaml`
+2. **Create experiment** → Add `[@key]` citations in README
+3. **Run indexer** → `python scripts/lit_index.py`
+4. **Write survey** → Use `related-work.md` for narrative overview
+
+### Validation
+Check for citation errors:
+```bash
+python scripts/lit_index.py --check
+```
+Fails if experiments cite papers not in the database.

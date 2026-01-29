@@ -1,0 +1,42 @@
+# Paper Database
+# Format: key → metadata
+# Cite in experiments as [@key]
+
+# =============================================================================
+# Core Methods
+# =============================================================================
+
+resnet:
+  title: "Deep Residual Learning for Image Recognition"
+  authors: "He et al."
+  year: 2016
+  venue: CVPR
+  arxiv: "1512.03385"
+  tags: [architecture, vision, baseline]
+  notes: "Skip connections, foundation for modern CNNs"
+
+# =============================================================================
+# Relevant Techniques  
+# =============================================================================
+
+# transformer:
+#   title: "Attention Is All You Need"
+#   authors: "Vaswani et al."
+#   year: 2017
+#   venue: NeurIPS
+#   arxiv: "1706.03762"
+#   tags: [attention, architecture]
+#   notes: "Self-attention mechanism"
+
+# =============================================================================
+# Benchmarks & Datasets
+# =============================================================================
+
+cifar:
+  title: "Learning Multiple Layers of Features from Tiny Images"
+  authors: "Krizhevsky"
+  year: 2009
+  venue: "Technical Report"
+  url: "https://www.cs.toronto.edu/~kriz/cifar.html"
+  tags: [dataset, vision, benchmark]
+  notes: "CIFAR-10/100 datasets"

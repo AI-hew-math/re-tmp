@@ -60,6 +60,10 @@ Extends $PARENT_ID.
 ## Method
 (Write method)
 
+## References
+<!-- Cite papers from literature/papers.yaml using [@key] -->
+<!-- Example: Based on [@transformer] attention mechanism -->
+
 ## Results
 (To be filled)
 EOF

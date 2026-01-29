@@ -41,5 +41,8 @@ uv run python3 src/train.py experiment=EXP001 trainer.accelerator=cpu trainer.fa
 python3 scripts/submit.py --experiment EXP001 --device "1x3090" --cluster soda
 ```
 
+## References
+- [@cifar] - CIFAR-10 dataset for baseline validation
+
 ## Results
 (Baseline reference - to be filled after first run)

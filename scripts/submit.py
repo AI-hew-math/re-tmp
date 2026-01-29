@@ -12,30 +12,35 @@ import sys
 
 
 def get_gpu_config(device: str) -> tuple[str, int]:
-    """Map device string to (partition, gpu_count)."""
-    gpu_map = {
-        # soda
-        "1x3090": ("R3090", 1),
-        "2x3090": ("R3090", 2),
-        "4x3090": ("R3090", 4),
-        "1xa100": ("A100", 1),
-        "2xa100": ("A100", 2),
-        "4xa100": ("A100", 4),
-        # vegi
-        "1x4090": ("R4090", 1),
-        "2x4090": ("R4090", 2),
-        "4x4090": ("R4090", 4),
-        "8x4090": ("R4090", 8),
-        "1xa6000": ("A6000", 1),
-        "2xa6000": ("A6000", 2),
-        "4xa6000": ("A6000", 4),
-        "1xpro6000": ("RTXPRO6000", 1),
-        "2xpro6000": ("RTXPRO6000", 2),
-        # potato
-        "1xa6000-potato": ("A6000", 1),
-        "4xa6000-potato": ("A6000", 4),
+    """Map device string to (partition, gpu_count).
+
+    Parses strings like '4x3090', '8xa100', '2xpro6000' dynamically.
+    """
+    import re
+
+    # GPU type to partition mapping
+    gpu_to_partition = {
+        "3090": "R3090",
+        "a100": "A100",
+        "4090": "R4090",
+        "a6000": "A6000",
+        "pro6000": "RTXPRO6000",
     }
-    return gpu_map.get(device.lower(), ("R3090", 1))
+
+    device = device.lower().strip()
+
+    # Parse format: NxGPU (e.g., "4x3090", "8xa100")
+    match = re.match(r"(\d+)x(.+)", device)
+    if match:
+        count = int(match.group(1))
+        gpu_type = match.group(2)
+        partition = gpu_to_partition.get(gpu_type)
+        if partition:
+            return (partition, count)
+
+    # Fallback
+    print(f"Warning: Unknown device '{device}', defaulting to R3090 x1")
+    return ("R3090", 1)
 
 
 def main():

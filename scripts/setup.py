@@ -12,24 +12,40 @@ import sys
 from pathlib import Path
 
 # Default LAIT Lab configuration
+# GPU counts based on actual per-node availability
 DEFAULT_CLUSTERS = [
     {
         "name": "soda",
         "partitions": ["R3090", "A100"],
-        "gpus": "10x 3090, 8x A100",
-        "devices": ["1x3090", "2x3090", "4x3090", "1xa100", "2xa100", "4xa100"],
+        "gpus": "10x 3090 (soda-02), 8x 3090 (soda-03), 8x A100 (soda-04)",
+        "devices": [
+            # R3090: soda-02 has 10, soda-03 has 8 → max 8 safe
+            "1x3090", "2x3090", "3x3090", "4x3090", "5x3090", "6x3090", "7x3090", "8x3090",
+            # A100: soda-04 has 8
+            "1xa100", "2xa100", "3xa100", "4xa100", "5xa100", "6xa100", "7xa100", "8xa100",
+        ],
     },
     {
         "name": "vegi",
         "partitions": ["R4090", "A6000", "RTXPRO6000"],
-        "gpus": "16x 4090, 8x A6000, 16x Pro6000 (96GB)",
-        "devices": ["1x4090", "2x4090", "4x4090", "8x4090", "1xa6000", "2xa6000", "4xa6000", "1xpro6000", "2xpro6000"],
+        "gpus": "8x 4090/node (vegi-01/02), 8x A6000 (vegi-03), 8x Pro6000 96GB (vegi-04/05)",
+        "devices": [
+            # R4090: vegi-01/02 each have 8
+            "1x4090", "2x4090", "3x4090", "4x4090", "5x4090", "6x4090", "7x4090", "8x4090",
+            # A6000: vegi-03 has 8
+            "1xa6000", "2xa6000", "3xa6000", "4xa6000", "5xa6000", "6xa6000", "7xa6000", "8xa6000",
+            # RTXPRO6000: vegi-04/05 each have 8 (96GB VRAM each)
+            "1xpro6000", "2xpro6000", "3xpro6000", "4xpro6000", "5xpro6000", "6xpro6000", "7xpro6000", "8xpro6000",
+        ],
     },
     {
         "name": "potato",
         "partitions": ["A6000"],
-        "gpus": "12x A6000",
-        "devices": ["1xa6000", "2xa6000", "4xa6000"],
+        "gpus": "6x A6000/node (potato-01/02)",
+        "devices": [
+            # A6000: potato-01/02 each have 6
+            "1xa6000", "2xa6000", "3xa6000", "4xa6000", "5xa6000", "6xa6000",
+        ],
     },
 ]
 

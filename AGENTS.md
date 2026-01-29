@@ -254,54 +254,50 @@ literature/
 
 When user shares an arxiv link or asks to add a paper:
 
-**Step 1: Fetch metadata**
+**Step 1: Fetch paper and create notes**
 ```bash
-# Auto-fetch from arxiv
+uv run python scripts/fetch_paper.py <arxiv-id-or-url> --key <short-key> --create --full
+```
+
+Example:
+```bash
 uv run python scripts/fetch_paper.py 1706.03762 --key transformer --create --full
 ```
 
-This will:
-- Fetch title, authors, abstract from arxiv API
-- Try to download full tex source
-- Output YAML to paste into `papers.yaml`
-- Create `papers/<key>.md` with template + source
+This automatically:
+- Fetches title, authors, abstract from arxiv API
+- Downloads full tex source
+- Outputs YAML to paste into `papers.yaml`
+- Creates `papers/<key>.md` with template pre-filled + full source embedded
 
-Then update `papers.yaml`:
+**Step 2: Update papers.yaml**
+
+Copy the YAML output from the script into `literature/papers.yaml`:
 ```yaml
 transformer:
   title: "Attention Is All You Need"
   authors: "Vaswani et al."
   year: 2017
-  venue: NeurIPS
+  venue: NeurIPS  # Update from "arXiv" once published
   arxiv: "1706.03762"
-  repo: "https://github.com/tensorflow/tensor2tensor"  # Find official repo
-  tags: [attention, architecture]
-  notes: "Self-attention mechanism"
+  repo: "https://github.com/tensorflow/tensor2tensor"  # Search GitHub for official repo
+  tags: [attention, architecture]  # Use: architecture, training, data, vision, nlp, efficiency
+  notes: "Self-attention replaces recurrence"
   details: papers/transformer.md
 ```
 
-**Step 2: (For important papers) Create detailed notes**
+**Step 3: Write contextualized summary**
+
+Open `literature/papers/<key>.md` and fill in:
+- **Summary (In Context)** - Why this paper matters *for this project*, not generic abstract
+- **Code to Borrow** - Actual snippets worth adapting
+- **Relevance to Our Experiments** - Which experiments could use this
+
+The full paper tex is already saved in the collapsible section at the bottom.
+
+**Step 4: Commit**
 ```bash
-cp literature/papers/.template.md literature/papers/<key>.md
-```
-
-When reading the paper, fill in:
-- **Contextualized summary** - Not generic abstract. Why this paper matters *for this project*
-- **Key contributions** - What's novel
-- **Method/architecture** - How it works, details needed to implement
-- **Code worth borrowing** - Actual snippets to adapt
-- **Relevance** - Specific experiments this enables or informs
-
-**Step 2b: Save full paper content**
-
-Fetch full text (arxiv tex or PDF text) and paste into the collapsible section at bottom of notes.
-This preserves the source for future reference without cluttering the summary.
-
-```markdown
-<details>
-<summary>📄 Full Paper Content</summary>
-[FULL TEX / TEXT HERE]
-</details>
+git add literature/ && git commit -m "lit: add <paper-name>"
 ```
 
 **Step 3: Cite in experiments**

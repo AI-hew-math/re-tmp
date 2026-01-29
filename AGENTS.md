@@ -47,19 +47,23 @@ memory/
 
 Keep it under 200 tokens. Remove completed items. This is "working memory."
 
-### DECISIONS.md Structure
-```markdown
-## Research Direction
-- Goal: improve generalization
-- Approach: regularization techniques
+### DECISIONS.md
+Append-only. Never delete. Use exact format from `templates/DECISION.md`.
 
-## Technical Choices
-### 2025-01-29: Dropout over BatchNorm
-**Decision**: Use dropout for regularization
-**Reason**: BatchNorm interferes with small batch training
+## Templates (CRITICAL)
+
+**NEVER write documentation from scratch.** Always copy from `templates/` and fill in.
+
+```
+templates/
+├── EXPERIMENT_README.md  # Copy for new experiment docs
+├── DECISION.md           # Copy for each decision entry
+├── STATUS_HISTORY.md     # Copy for STATUS.md history entries
+├── SESSION_LOG.md        # Copy for memory/log.md entries
+└── PLAN_MODE.md          # Copy for plan mode output
 ```
 
-Append-only. Never delete. This prevents contradicting past decisions.
+This ensures consistency. Do not invent your own formats.
 
 ## Environment Setup
 
@@ -142,40 +146,11 @@ Before any experiments, understand the research:
 
 ### 2. Plan Mode (REQUIRED Before Any Experiment)
 
-Before creating or implementing any experiment, enter **Plan Mode**. Output your thinking explicitly:
+Before creating any experiment, enter **Plan Mode**. 
 
-```
-📋 PLAN MODE
+**Copy the template from `templates/PLAN_MODE.md` and fill it in.**
 
-**Research Question**: What are we trying to learn?
-
-**Proposed Experiment**: EXP00X - [name]
-
-**Why This Experiment**:
-- What gap does this fill?
-- Why now? (What do we know that makes this the logical next step?)
-
-**Hypothesis**: 
-- Expected outcome and reasoning
-
-**Alternatives Considered**:
-- Option A: ... (why not)
-- Option B: ... (why not)
-- Chosen: ... (why yes)
-
-**Dependencies**:
-- Papers: [@key1], [@key2]
-- Builds on: EXP00Y
-- Data needed: ...
-
-**Risks**:
-- What could go wrong?
-- How will we know if it failed vs just needs tuning?
-
-Ready to proceed? [Wait for user confirmation]
-```
-
-**Do NOT skip Plan Mode.** Even if user says "just do X", output the plan first and confirm.
+Do NOT skip Plan Mode. Even if user says "just do X", output the plan first and wait for confirmation.
 
 ### 3. Document BEFORE Running
 

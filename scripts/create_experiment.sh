@@ -68,56 +68,11 @@ model:
   _target_: src.experiments.$NEW_ID.model.Model
 EOF
 
-# 3. Documentation
+# 3. Documentation - copy from template and fill in
 mkdir -p experiments/$NEW_ID
-cat <<EOF > experiments/$NEW_ID/README.md
----
-id: $NEW_ID
-parent: $PARENT_ID
-status: planned
-created: $DATE
----
-
-# $NEW_ID: $DESC
-
-## Context
-Extends $PARENT_ID.
-
-## Hypothesis
-<!-- FILL BEFORE RUNNING: What do you expect and why? -->
-
-
-## Method
-<!-- What specifically are you changing from the parent? -->
-
-
-## Success Criteria
-<!-- How will you measure if this worked? -->
-- [ ] Metric improves by X%
-- [ ] Training converges faster
-- [ ] ...
-
-## References
-<!-- Cite papers from literature/papers.yaml using [@key] -->
-
-
----
-
-## Results
-<!-- FILL AFTER RUNNING -->
-
-### Metrics
-| Metric | Expected | Actual |
-|--------|----------|--------|
-| | | |
-
-### Observations
-
-
-### Conclusion
-<!-- Hypothesis confirmed/rejected? What's next? -->
-
-EOF
+cp templates/EXPERIMENT_README.md experiments/$NEW_ID/README.md
+sed -i '' "s/EXPXXX/$NEW_ID/g; s/EXPYYY/$PARENT_ID/g; s/YYYY-MM-DD/$DATE/g; s/\[Brief Description\]/$DESC/g" experiments/$NEW_ID/README.md 2>/dev/null || \
+sed -i "s/EXPXXX/$NEW_ID/g; s/EXPYYY/$PARENT_ID/g; s/YYYY-MM-DD/$DATE/g; s/\[Brief Description\]/$DESC/g" experiments/$NEW_ID/README.md
 
 # 4. Update graph
 python3 scripts/update_graph.py

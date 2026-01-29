@@ -1,15 +1,65 @@
 # AGENTS.md
 
-> **For AI Coding Agents**: This file contains your operating instructions for this project.
-> Read this file completely before making any changes to the codebase.
+> **For AI Coding Agents**: Read this file on every session.
 
 This is the canonical research template for LAIT Lab, optimized for AI coding agents.
 
-## First-Time Setup
+## Session Start Checklist
 
-If `configs/site.yaml` doesn't exist, this is a fresh project. Read `ONBOARDING.md` and walk the user through setup (cluster selection, data discussion, credentials).
+1. **Read `memory/NOW.md`** - What needs attention this session?
+2. **Read `memory/DECISIONS.md`** - Don't contradict past decisions
+3. **Check `configs/site.yaml`** - If missing, this is first session → read `ONBOARDING.md`
 
-After onboarding, you won't need to read `ONBOARDING.md` again.
+## Memory System
+
+**CRITICAL**: Sessions can end abruptly (context full, rate limit, user closes). 
+Never wait for "end of session" to update memory. **Update immediately after every significant action.**
+
+```
+memory/
+├── NOW.md        # What to do NOW (read every session, ~200 tokens)
+├── DECISIONS.md  # Key decisions (read every session, append-only)
+└── log.md        # Full history (append after work, don't read routinely)
+```
+
+### When to Update
+
+| Action | Update |
+|--------|--------|
+| Submit experiment | NOW.md: add "check job X" |
+| Make decision | DECISIONS.md: append decision + reasoning |
+| Complete experiment | NOW.md: update focus, log.md: add results |
+| Design next step | NOW.md: update next actions |
+| Finish significant work | log.md: append what was done |
+
+### NOW.md Structure
+```markdown
+## Check First
+- EXP002 job 12345 on vegi - done?
+
+## Current Focus  
+- Implementing EXP003
+
+## Next Actions
+- If EXP002 done → log results
+- Submit EXP003 when ready
+```
+
+Keep it under 200 tokens. Remove completed items. This is "working memory."
+
+### DECISIONS.md Structure
+```markdown
+## Research Direction
+- Goal: improve generalization
+- Approach: regularization techniques
+
+## Technical Choices
+### 2025-01-29: Dropout over BatchNorm
+**Decision**: Use dropout for regularization
+**Reason**: BatchNorm interferes with small batch training
+```
+
+Append-only. Never delete. This prevents contradicting past decisions.
 
 ## Environment Setup
 

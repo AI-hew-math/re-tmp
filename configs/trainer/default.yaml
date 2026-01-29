@@ -4,3 +4,14 @@ accelerator: gpu
 devices: 1
 precision: 16-mixed
 log_every_n_steps: 10
+
+# Debug/dev options
+fast_dev_run: false
+limit_train_batches: null
+limit_val_batches: null
+
+# DDP (set via submit.py for multi-GPU)
+strategy: auto
+
+# Gradient clipping
+gradient_clip_val: null

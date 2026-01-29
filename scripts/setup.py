@@ -285,7 +285,16 @@ clusters:
         lit_dir = Path("literature")
         lit_dir.mkdir(exist_ok=True)
 
-        related_work = f"""# {research_topic} - Related Work
+        # Only create related-work.md if it doesn't exist or is a placeholder
+        related_work_path = lit_dir / "related-work.md"
+        if related_work_path.exists():
+            content = related_work_path.read_text()
+            if "Run `uv run python scripts/setup.py` to generate" not in content:
+                print("  ⏭ literature/related-work.md (already exists, skipping)")
+                setup_literature = False  # Skip writing
+
+        if setup_literature:
+            related_work = f"""# {research_topic} - Related Work
 
 Comprehensive survey of related work. Not all will go in paper - for reference.
 
@@ -343,8 +352,8 @@ Comprehensive survey of related work. Not all will go in paper - for reference.
 ### Category 2
 - https://arxiv.org/abs/XXXX.XXXXX
 """
-        (lit_dir / "related-work.md").write_text(related_work)
-        print("  ✓ literature/related-work.md")
+            related_work_path.write_text(related_work)
+            print("  ✓ literature/related-work.md")
 
     # 7. Done
     print("\n" + "=" * 60)

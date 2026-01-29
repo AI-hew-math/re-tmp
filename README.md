@@ -1,0 +1,76 @@
+# Deep Learning Research Template
+
+This is the canonical research template for the LAIT Lab, specifically optimized for **Coding Agents**. It enforces strict inheritance, configuration standards, and infrastructure awareness.
+
+## 1. Infrastructure Guide
+
+### 1.1 Server Inventory
+Jobs should be submitted to the following SLURM clusters:
+
+| Cluster | Key Partitions | GPUs | Best For |
+|---------|----------------|------|----------|
+| **soda** | `R3090`, `A100` | 10x 3090, 8x A100 | General purpose, A100 tasks |
+| **vegi** | `R4090`, `A6000`, `RTXPRO6000` | 16x 4090, 8x A6000, 16x Pro6000 (96GB) | Blackwell/Pro6000 tasks, high VRAM |
+| **potato**| `A6000` | 12x A6000 | A6000 tasks |
+
+**Access:** SSH via `ssh soda`, `ssh vegi`, or `ssh potato`. (Requires `~/.ssh/config` setup).
+
+### 1.2 Storage Hierarchy
+- **Home**: `/workspace/gankim` (Code, config, `uv` virtualenvs).
+- **Local Scratch**: `/data/gankim` (High-speed storage for datasets specific to that cluster). **Use this for active training data.**
+- **Shared**: `/nas1`, `/nas2` (Archival datasets and cross-cluster storage).
+
+### 1.3 Credentials
+Run the following to ensure the server is ready for training:
+```bash
+# Check if WANDB_API_KEY and other tokens are set
+python3 scripts/check_creds.py
+```
+
+## 2. Environment (uv)
+We use `uv` for fast, reproducible environment management.
+
+- **Local Setup**: `uv sync`
+- **Add Dependency**: `uv add <package>`
+- **Run on Server**: `uv run python3 src/train.py ...`
+
+## 3. Agent Protocol (SOP)
+
+Agents **MUST** follow these steps to ensure research integrity:
+
+1.  **Read Context**: Check `STATUS.md` for current experiment graph and `index.md` for project goals.
+2.  **Scaffold**:
+    ```bash
+    ./scripts/create_experiment.sh EXPXXX PARENT_ID "Description"
+    ```
+    This creates:
+    - `src/experiments/EXPXXX/model.py` (The code)
+    - `configs/experiment/EXPXXX.yaml` (The hyperparams)
+    - `experiments/EXPXXX/README.md` (The documentation)
+3.  **Implement**:
+    - Edit `src/experiments/EXPXXX/model.py`.
+    - **Rule**: Must inherit from `src.core.base_model.BaseModel`.
+4.  **Configure**:
+    - Edit `configs/experiment/EXPXXX.yaml`.
+    - **Rule**: No hardcoding in Python. Use Hydra overrides.
+5.  **Verify**:
+    ```bash
+    python3 scripts/validate.py EXPXXX
+    ```
+6.  **Sync**: Commit and `git push`.
+7.  **Submit**:
+    ```bash
+    # Check for free GPUs
+    python3 scripts/check_servers.py
+    
+    # Submit job (automates sbatch)
+    python3 scripts/submit.py --experiment EXPXXX --device "4x3090" --cluster soda
+    ```
+
+## 4. Experiment Tracking
+Lineage is tracked in `STATUS.md` via a Mermaid graph. 
+Every experiment must declare a `parent` in its `README.md` to maintain the graph.
+
+---
+**Maintained by:** Ganghyun Kim (Kyle Kim)
+**References:** [[dl-template-plan]], [[server-specs]], [[LAIT-Server-Onboarding]]

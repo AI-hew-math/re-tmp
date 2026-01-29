@@ -11,14 +11,24 @@ codebase: null
 
 ## ::resume
 > **Updated:** 2026-01-29
-> **Thread:** Initial project setup following the approved plan.
-> **Next:** Implement src/core base classes and config schema.
+> **Thread:** Documentation and infrastructure integration.
+> **Next:** Final verification of smart submission logic.
 > **Blocker:** None
-> **Recent:** Created folder structure, initialized uv, and wrote STATUS.md.
+> **Recent:** Wrote comprehensive README.md, implemented check_creds.py, and documented storage hierarchy.
 
 # Deep Learning Research Template
 
-This project is a canonical deep learning research repository designed for the LAIT Lab environment and optimized for **Coding Agents**.
+## Infrastructure
+
+### Clusters
+- **soda**: 10x 3090, 8x A100.
+- **vegi**: 16x 4090, 8x A6000, 16x Pro6000 (96GB Blackwell).
+- **potato**: 12x A6000.
+
+### Storage
+- **Home**: `/workspace/gankim`
+- **Data (Local)**: `/data/gankim` (Scratch space per login node)
+- **NAS (Shared)**: `/nas1`, `/nas2`
 
 ## Agent Protocol
 

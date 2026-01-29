@@ -242,14 +242,19 @@ Literature is **integrated** with experiments, not a separate concern.
 ### Structure
 ```
 literature/
-├── README.md          # How literature works
-├── papers.yaml        # Paper database (structured)
+├── papers.yaml        # Paper database (metadata + repo links)
+├── papers/            # Detailed notes for important papers
+│   ├── .template.md   # Template for paper notes
+│   └── <key>.md       # Deep-dive: method, code snippets, relevance
 ├── related-work.md    # Survey narrative (created by setup.py)
 └── index.md           # Auto-generated reverse index
 ```
 
-### Paper Database (`papers.yaml`)
-Add papers with structured metadata:
+### Adding a Paper (Agent Workflow)
+
+When user shares an arxiv link or asks to add a paper:
+
+**Step 1: Fetch metadata and add to `papers.yaml`**
 ```yaml
 transformer:
   title: "Attention Is All You Need"
@@ -257,38 +262,46 @@ transformer:
   year: 2017
   venue: NeurIPS
   arxiv: "1706.03762"
+  repo: "https://github.com/tensorflow/tensor2tensor"  # Find official repo
   tags: [attention, architecture]
   notes: "Self-attention mechanism"
+  details: papers/transformer.md  # If detailed notes exist
 ```
 
-### Citing in Experiments
-In `experiments/EXPXXX/README.md`, use `[@key]` citations:
+**Step 2: (For important papers) Create detailed notes**
+```bash
+cp literature/papers/.template.md literature/papers/<key>.md
+```
+
+Fill in:
+- **Key contributions** - What's novel
+- **Method/architecture** - How it works
+- **Code worth borrowing** - Actual snippets to adapt
+- **Relevance** - How it connects to our experiments
+
+**Step 3: Cite in experiments**
+
+In `experiments/EXPXXX/README.md`:
 ```markdown
 ## References
 - [@transformer] - Using self-attention for feature extraction
-- [@resnet] - Baseline comparison
 ```
 
-### Generating the Index
-After adding citations, regenerate the reverse index:
+**Step 4: Regenerate index**
 ```bash
 python scripts/lit_index.py
 ```
 
-This creates `literature/index.md` showing:
-- Which experiments cite which papers
-- Uncited papers (in database but never used)
-- Missing papers (cited but not in database)
+### Quick Add vs Deep Add
 
-### Workflow
-1. **Find relevant paper** → Add to `papers.yaml`
-2. **Create experiment** → Add `[@key]` citations in README
-3. **Run indexer** → `python scripts/lit_index.py`
-4. **Write survey** → Use `related-work.md` for narrative overview
+| Scenario | Action |
+|----------|--------|
+| Background reference | Add to `papers.yaml` only |
+| Building on this paper | Add to yaml + create `papers/<key>.md` |
+| Implementing their method | Full notes with code snippets |
 
 ### Validation
-Check for citation errors:
 ```bash
 python scripts/lit_index.py --check
 ```
-Fails if experiments cite papers not in the database.
+Fails if experiments cite papers not in database.

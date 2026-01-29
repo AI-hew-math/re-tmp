@@ -254,7 +254,19 @@ literature/
 
 When user shares an arxiv link or asks to add a paper:
 
-**Step 1: Fetch metadata and add to `papers.yaml`**
+**Step 1: Fetch metadata**
+```bash
+# Auto-fetch from arxiv
+uv run python scripts/fetch_paper.py 1706.03762 --key transformer --create --full
+```
+
+This will:
+- Fetch title, authors, abstract from arxiv API
+- Try to download full tex source
+- Output YAML to paste into `papers.yaml`
+- Create `papers/<key>.md` with template + source
+
+Then update `papers.yaml`:
 ```yaml
 transformer:
   title: "Attention Is All You Need"
@@ -265,7 +277,7 @@ transformer:
   repo: "https://github.com/tensorflow/tensor2tensor"  # Find official repo
   tags: [attention, architecture]
   notes: "Self-attention mechanism"
-  details: papers/transformer.md  # If detailed notes exist
+  details: papers/transformer.md
 ```
 
 **Step 2: (For important papers) Create detailed notes**
@@ -273,11 +285,24 @@ transformer:
 cp literature/papers/.template.md literature/papers/<key>.md
 ```
 
-Fill in:
+When reading the paper, fill in:
+- **Contextualized summary** - Not generic abstract. Why this paper matters *for this project*
 - **Key contributions** - What's novel
-- **Method/architecture** - How it works
+- **Method/architecture** - How it works, details needed to implement
 - **Code worth borrowing** - Actual snippets to adapt
-- **Relevance** - How it connects to our experiments
+- **Relevance** - Specific experiments this enables or informs
+
+**Step 2b: Save full paper content**
+
+Fetch full text (arxiv tex or PDF text) and paste into the collapsible section at bottom of notes.
+This preserves the source for future reference without cluttering the summary.
+
+```markdown
+<details>
+<summary>📄 Full Paper Content</summary>
+[FULL TEX / TEXT HERE]
+</details>
+```
 
 **Step 3: Cite in experiments**
 

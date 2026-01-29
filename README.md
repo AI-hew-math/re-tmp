@@ -24,16 +24,21 @@ cd my-project
 # 2. Install dependencies
 uv sync
 
-# 3. Run interactive setup (configures clusters, paths, WandB)
-uv run python3 scripts/setup.py
+# 3. Open your AI coding agent
+claude  # or cursor, code, etc.
+# Agent reads AGENTS.md → ONBOARDING.md and walks you through setup
 
-# 4. Set up credentials
-cp .env.example .env
-# Edit .env and add your WANDB_API_KEY
-
-# 5. Verify baseline works
+# 4. Verify baseline works
 uv run python3 src/train.py experiment=EXP001 trainer.fast_dev_run=true
 ```
+
+### Manual Setup (Without AI Agent)
+
+If not using an AI agent, see `ONBOARDING.md` for:
+- Cluster selection
+- Data placement strategy  
+- Creating `configs/site.yaml`
+- Setting up `.env` credentials
 
 ## Using with AI Coding Agents
 
@@ -144,7 +149,6 @@ Agent: [Updates literature/related-work.md with paper details]
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/setup.py` | Interactive project configuration |
 | `scripts/create_experiment.sh` | Scaffold new experiment |
 | `scripts/validate.py` | Verify experiment structure |
 | `scripts/submit.py` | Submit SLURM jobs |

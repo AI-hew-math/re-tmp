@@ -2,50 +2,14 @@
 
 > **For AI Coding Agents**: This file contains your operating instructions for this project.
 > Read this file completely before making any changes to the codebase.
-> Follow the SOP (Standard Operating Procedure) strictly to maintain research integrity.
 
 This is the canonical research template for LAIT Lab, optimized for AI coding agents.
 
-## First-Time Setup (Onboarding)
+## First-Time Setup
 
-After cloning, run the setup script to configure for your environment:
-```bash
-uv run python3 scripts/setup.py
-```
+If `configs/site.yaml` doesn't exist, this is a fresh project. Read `ONBOARDING.md` and walk the user through setup (cluster selection, data discussion, credentials).
 
-This interactively configures:
-- **Project name** - WandB project, experiment naming
-- **Clusters** - Available SLURM clusters (or use LAIT defaults)
-- **Paths** - Workspace, data, NAS locations
-- **Preferences** - Default cluster, GPU device
-- **Literature** - Creates `literature/related-work.md` template
-
-Generated files:
-- `configs/site.yaml` - Site-specific config (gitignored)
-- `.env` - Credentials (from `.env.example`)
-- `literature/related-work.md` - Paper survey template
-
-### Data Discussion (Agent Must Ask)
-
-Before starting experiments, discuss dataset strategy with the user:
-
-1. **What dataset will you use?**
-2. **How big is it?**
-   - **Small (<1GB)**: Keep in project folder (`./data/`)
-   - **Large (>1GB)**: Use cluster data folder (`/data/$USER/`)
-   - **On NAS**: Copy to cluster data folder first:
-     ```bash
-     rsync -av /nas1/datasets/my_dataset /data/$USER/
-     ```
-
-3. **Update config accordingly:**
-   ```yaml
-   # configs/data/default.yaml or experiment-specific
-   data_dir: "/data/${oc.env:USER}/datasets"  # Large datasets
-   data_dir: "./data"  # Small datasets in project
-   ```
-
-**CRITICAL**: Never train directly from NAS - always copy to `/data/$USER/` first for performance.
+After onboarding, you won't need to read `ONBOARDING.md` again.
 
 ## Environment Setup
 

@@ -25,6 +25,28 @@ Generated files:
 - `.env` - Credentials (from `.env.example`)
 - `literature/related-work.md` - Paper survey template
 
+### Data Discussion (Agent Must Ask)
+
+Before starting experiments, discuss dataset strategy with the user:
+
+1. **What dataset will you use?**
+2. **How big is it?**
+   - **Small (<1GB)**: Keep in project folder (`./data/`)
+   - **Large (>1GB)**: Use cluster data folder (`/data/$USER/`)
+   - **On NAS**: Copy to cluster data folder first:
+     ```bash
+     rsync -av /nas1/datasets/my_dataset /data/$USER/
+     ```
+
+3. **Update config accordingly:**
+   ```yaml
+   # configs/data/default.yaml or experiment-specific
+   data_dir: "/data/${oc.env:USER}/datasets"  # Large datasets
+   data_dir: "./data"  # Small datasets in project
+   ```
+
+**CRITICAL**: Never train directly from NAS - always copy to `/data/$USER/` first for performance.
+
 ## Environment Setup
 
 ### Clone & Configure
@@ -172,16 +194,13 @@ model:
 
 ## Testing
 
-### Local Validation
+### Validation
 ```bash
 # Validate experiment structure
 python3 scripts/validate.py EXPXXX
 
-# Dry run on LOCAL MACHINE (uses /tmp for data)
-uv run python3 src/train.py experiment=EXPXXX trainer.accelerator=cpu trainer.fast_dev_run=true data.data_dir=/tmp/data
-
-# Dry run on CLUSTER (uses /data/$USER/datasets)
-uv run python3 src/train.py experiment=EXPXXX trainer.accelerator=cpu trainer.fast_dev_run=true
+# Dry run (fast_dev_run = 1 batch only)
+uv run python3 src/train.py experiment=EXPXXX trainer.fast_dev_run=true
 ```
 
 ### Monitoring Running Jobs

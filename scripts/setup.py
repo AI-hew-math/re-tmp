@@ -362,13 +362,9 @@ Comprehensive survey of related work. Not all will go in paper - for reference.
     print("""
 Next steps:
   1. Add your WandB API key to .env
+  
   2. Verify baseline works:
-     
-     # Local machine (no cluster):
-     uv run python3 src/train.py experiment=EXP001 trainer.accelerator=cpu trainer.fast_dev_run=true data.data_dir=/tmp/data
-     
-     # On cluster:
-     uv run python3 src/train.py experiment=EXP001 trainer.accelerator=cpu trainer.fast_dev_run=true
+     uv run python3 src/train.py experiment=EXP001 trainer.fast_dev_run=true
 
   3. Create your first experiment:
      ./scripts/create_experiment.sh EXP002 EXP001 "description"

@@ -15,7 +15,9 @@ Standardized PyTorch Lightning template for LAIT Lab experiments. Designed for r
 ## Quick Start
 
 ```bash
-# 1. Fork or clone this template
+# 1. SSH to cluster and clone
+ssh vegi  # or soda, potato
+cd /workspace/$USER
 git clone <repo-url> my-project
 cd my-project
 
@@ -29,10 +31,7 @@ uv run python3 scripts/setup.py
 cp .env.example .env
 # Edit .env and add your WANDB_API_KEY
 
-# 5. Verify everything works (local machine)
-uv run python3 src/train.py experiment=EXP001 trainer.accelerator=cpu trainer.fast_dev_run=true data.data_dir=/tmp/data
-
-# On cluster (uses /data/$USER/datasets by default)
+# 5. Verify baseline works
 uv run python3 src/train.py experiment=EXP001 trainer.fast_dev_run=true
 ```
 
@@ -176,10 +175,13 @@ uv sync
 uv pip install -e .
 ```
 
-**`/data` path doesn't exist (local testing)**
+**Data path issues**
 ```bash
-# Override data_dir for local machines
-uv run python3 src/train.py experiment=EXP001 data.data_dir=/tmp/data ...
+# Make sure you're on a cluster headnode (vegi, soda, potato)
+# /data/$USER should exist there
+
+# If using custom dataset location:
+uv run python3 src/train.py experiment=EXP001 data.data_dir=/path/to/data ...
 ```
 
 **Can't connect to cluster**

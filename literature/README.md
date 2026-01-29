@@ -7,8 +7,12 @@ This directory tracks papers relevant to this research project.
 ```
 literature/
 ├── README.md          # This file
-├── related-work.md    # Survey document (create via setup.py or manually)
-└── papers.yaml        # Paper database with metadata
+├── papers.yaml        # Paper database (metadata + links)
+├── papers/            # Detailed notes for important papers
+│   ├── .template.md   # Template for new paper notes
+│   └── <key>.md       # Deep-dive notes (optional per paper)
+├── related-work.md    # Survey narrative (create via setup.py)
+└── index.md           # Auto-generated reverse index
 ```
 
 ## How It Works
@@ -22,9 +26,24 @@ transformer:
   year: 2017
   venue: NeurIPS
   arxiv: "1706.03762"
+  repo: "https://github.com/tensorflow/tensor2tensor"
   tags: [attention, architecture]
-  notes: "Foundation for modern LLMs"
+  notes: "Self-attention mechanism"
+  details: papers/transformer.md  # Optional: detailed notes
 ```
+
+### 1b. (Optional) Add Detailed Notes
+
+For important papers, create `papers/<key>.md` using the template:
+```bash
+cp papers/.template.md papers/transformer.md
+```
+
+Include:
+- Key contributions & method details
+- Architecture diagrams / equations
+- Code snippets worth borrowing
+- How it connects to your experiments
 
 ### 2. Cite in Experiments
 

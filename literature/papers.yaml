@@ -1,6 +1,20 @@
 # Paper Database
 # Format: key → metadata
 # Cite in experiments as [@key]
+#
+# Fields:
+#   title, authors, year, venue     - Basic metadata
+#   arxiv, url                      - Links (arxiv ID or full URL)
+#   repo                            - Official code repository
+#   tags                            - Categories for filtering
+#   notes                           - One-line summary
+#   details                         - Path to detailed notes (literature/papers/<key>.md)
+#
+# For important papers, create literature/papers/<key>.md with:
+#   - Key contributions
+#   - Architecture/method details
+#   - Code snippets worth borrowing
+#   - How it relates to our work
 
 # =============================================================================
 # Core Methods
@@ -12,8 +26,10 @@ resnet:
   year: 2016
   venue: CVPR
   arxiv: "1512.03385"
+  repo: "https://github.com/KaimingHe/deep-residual-networks"
   tags: [architecture, vision, baseline]
   notes: "Skip connections, foundation for modern CNNs"
+  # details: papers/resnet.md  # Create if needed
 
 # =============================================================================
 # Relevant Techniques  
@@ -25,8 +41,10 @@ resnet:
 #   year: 2017
 #   venue: NeurIPS
 #   arxiv: "1706.03762"
+#   repo: "https://github.com/tensorflow/tensor2tensor"
 #   tags: [attention, architecture]
 #   notes: "Self-attention mechanism"
+#   details: papers/transformer.md
 
 # =============================================================================
 # Benchmarks & Datasets

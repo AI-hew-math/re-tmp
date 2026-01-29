@@ -90,11 +90,42 @@ Before any experiments, understand the research:
 
 **Ask questions until you fully understand the research direction.**
 
-### 2. Design Experiment
+### 2. Plan Mode (REQUIRED Before Any Experiment)
 
-Either:
-- **User-driven**: "Let's test if attention helps" → you implement
-- **Agent-suggested**: Based on context, suggest logical next steps
+Before creating or implementing any experiment, enter **Plan Mode**. Output your thinking explicitly:
+
+```
+📋 PLAN MODE
+
+**Research Question**: What are we trying to learn?
+
+**Proposed Experiment**: EXP00X - [name]
+
+**Why This Experiment**:
+- What gap does this fill?
+- Why now? (What do we know that makes this the logical next step?)
+
+**Hypothesis**: 
+- Expected outcome and reasoning
+
+**Alternatives Considered**:
+- Option A: ... (why not)
+- Option B: ... (why not)
+- Chosen: ... (why yes)
+
+**Dependencies**:
+- Papers: [@key1], [@key2]
+- Builds on: EXP00Y
+- Data needed: ...
+
+**Risks**:
+- What could go wrong?
+- How will we know if it failed vs just needs tuning?
+
+Ready to proceed? [Wait for user confirmation]
+```
+
+**Do NOT skip Plan Mode.** Even if user says "just do X", output the plan first and confirm.
 
 ### 3. Document BEFORE Running
 

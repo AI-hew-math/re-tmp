@@ -1,3 +1,4 @@
+# CIFAR-10 dataset config
 _target_: src.core.base_data.CIFAR10DataModule
 data_dir: "/data/${oc.env:USER}/datasets"
 batch_size: 128

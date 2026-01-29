@@ -1,116 +1,124 @@
 # Deep Learning Research Template
 
-This is the canonical research template for the LAIT Lab, specifically optimized for **Coding Agents**. It enforces strict inheritance, configuration standards, and infrastructure awareness.
+Standardized PyTorch Lightning template for LAIT Lab experiments. Designed for reproducibility and **AI coding agent compatibility**.
 
-## 1. Infrastructure Guide
+## Quick Start
 
-### 1.1 Server Inventory
-Jobs should be submitted to the following SLURM clusters:
-
-| Cluster | Key Partitions | GPUs | Best For |
-|---------|----------------|------|----------|
-| **soda** | `R3090`, `A100` | 10x 3090, 8x A100 | General purpose, A100 tasks |
-| **vegi** | `R4090`, `A6000`, `RTXPRO6000` | 16x 4090, 8x A6000, 16x Pro6000 (96GB) | Blackwell/Pro6000 tasks, high VRAM |
-| **potato**| `A6000` | 12x A6000 | A6000 tasks |
-
-**Access:** SSH via `ssh soda`, `ssh vegi`, or `ssh potato`. (Requires `~/.ssh/config` setup).
-
-### 1.2 Storage Hierarchy
-- **Home**: `/workspace/gankim` (Code, config, `uv` virtualenvs).
-- **Local Scratch**: `/data/gankim` (High-speed storage). **Training data MUST be here.**
-- **Shared**: `/nas1`, `/nas2` (Archival datasets).
-
-### 1.3 Data Preparation (Essential)
-Agents must copy data from slow NAS to fast Local Scratch before training:
 ```bash
-# Example: Sync dataset to local scratch
-rsync -av /nas1/public/datasets/my_dataset /data/gankim/
+# 1. Fork or clone this template
+git clone <repo-url> my-project
+cd my-project
+
+# 2. Install dependencies
+uv sync
+
+# 3. Run interactive setup
+uv run python3 scripts/setup.py
+
+# 4. Verify everything works
+uv run python3 src/train.py experiment=EXP001 trainer.accelerator=cpu trainer.fast_dev_run=true
 ```
 
-### 1.4 Credentials
+## Using with AI Coding Agents
 
-## 2. Deployment & Setup
+This template is optimized for AI agents (Claude Code, Cursor, Copilot, Codex, etc.).
 
-### 2.1 First-time Setup
-1.  **Local**: Develop and commit your code.
-2.  **Server**: SSH to a cluster (e.g., `ssh vegi`).
-3.  **Clone**: 
-    ```bash
-    # ALWAYS place code in /workspace for persistence and performance
-    cd /workspace/gankim
-    git clone <your-repo-url>
-    cd <repo-name>
-    ```
-4.  **Environment**: 
-    ```bash
-    uv sync
-    ```
+### Setup
 
-### 2.2 Credentials
-Run the following to ensure the server is ready for training:
-```bash
-# Check if WANDB_API_KEY and other tokens are set
-python3 scripts/check_creds.py
+1. **Fork/Clone** this template to start a new research project
+2. **Run setup**: `uv run python3 scripts/setup.py` (configures paths, clusters, etc.)
+3. **Open your AI agent** in the project directory:
+   ```bash
+   # Claude Code
+   cd my-project && claude
+
+   # Cursor
+   cursor my-project
+
+   # VS Code + Copilot
+   code my-project
+   ```
+
+### How Agents Use This Template
+
+When an agent opens this project, it reads `AGENTS.md` which contains:
+- Infrastructure details (clusters, storage paths)
+- Standard Operating Procedure (SOP) for experiments
+- Code style rules and validation commands
+- Literature management guidelines
+
+### Example Agent Interactions
+
+**Creating a new experiment:**
+```
+You: "Create an experiment that adds attention to the baseline model"
+
+Agent: [Reads AGENTS.md, runs create_experiment.sh, edits model.py and config]
 ```
 
-## 3. Environment (uv)
-We use `uv` for fast, reproducible environment management.
+**Running experiments:**
+```
+You: "Check available GPUs and submit EXP002 to vegi"
 
-- **Local Setup**: `uv sync`
-- **Add Dependency**: `uv add <package>`
-- **Run on Server**: `uv run python3 src/train.py ...`
+Agent: [Runs check_servers.py, then submit.py with correct flags]
+```
 
-## 3. Agent Protocol (SOP)
+**Literature review:**
+```
+You: "Add this paper to related work: arxiv.org/abs/2401.12345"
 
-Agents **MUST** follow these steps to ensure research integrity:
+Agent: [Updates literature/related-work.md with paper details]
+```
 
-1.  **Read Context**: Check `STATUS.md` for current experiment graph and this `README.md` for project goals.
-2.  **Scaffold**:
-    ```bash
-    ./scripts/create_experiment.sh EXPXXX PARENT_ID "Description"
-    ```
-    This creates:
-    - `src/experiments/EXPXXX/model.py` (The code)
-    - `configs/experiment/EXPXXX.yaml` (The hyperparams)
-    - `experiments/EXPXXX/README.md` (The documentation)
-3.  **Implement**:
-    - Edit `src/experiments/EXPXXX/model.py`.
-    - **Rule**: Must inherit from `src.core.base_model.BaseModel`.
-4.  **Configure**:
-    - Edit `configs/experiment/EXPXXX.yaml`.
-    - **Rule**: No hardcoding in Python. Use Hydra overrides.
-5.  **Verify**:
-    ```bash
-    python3 scripts/validate.py EXPXXX
-    ```
-6.  **Sync**: Commit and `git push`.
-7.  **Submit**:
-    ```bash
-    # Check for free GPUs
-    python3 scripts/check_servers.py
-    
-    # Submit job (automates sbatch)
-    python3 scripts/submit.py --experiment EXPXXX --device "4x3090" --cluster soda
-    
-    # Get interactive debug shell (srun)
-    python3 scripts/submit.py --experiment EXPXXX --device "1x3090" --interactive
-    ```
+### Key Files for Agents
 
-### 8. Monitoring & Results
-- **Logs**: If a job fails immediately, check SLURM logs:
-  ```bash
-  tail -f logs/slurm/*.log
-  ```
-- **WandB**: Primary training metrics.
-- **Artifacts**: Checkpoints save to `outputs/EXPXXX/...`.
-- **Retrieval**: Sync results back to local machine:
-  ```bash
-  rsync -avz <cluster>:~/workspace/gankim/dl-template/outputs/ ./outputs/
-  ```
+| File | Purpose |
+|------|---------|
+| `AGENTS.md` | **Primary instructions** - agents read this first |
+| `STATUS.md` | Current experiment graph and active thread |
+| `literature/related-work.md` | Paper survey and references |
 
-## 4. Experiment Tracking
-Lineage is tracked in `STATUS.md` via a Mermaid graph. 
-Every experiment must declare a `parent` in its `README.md` to maintain the graph.
+## Features
+
+- **Hydra configs** - All hyperparameters in YAML, not code
+- **Experiment lineage** - Parent-child tracking in `STATUS.md`
+- **Scaffolding** - `./scripts/create_experiment.sh` auto-generates structure
+- **SLURM integration** - Smart submission via `scripts/submit.py`
+- **WandB logging** - Automatic if `WANDB_API_KEY` is set
+- **Literature tracking** - `literature/related-work.md` for paper management
+
+## Structure
+
+```
+├── AGENTS.md           # Agent instructions (read this!)
+├── STATUS.md           # Experiment graph
+├── src/
+│   ├── core/           # Base classes (don't modify)
+│   └── experiments/    # Your experiment implementations
+├── configs/            # Hydra configurations
+├── experiments/        # Documentation per experiment
+├── literature/         # Related work and paper notes
+└── scripts/            # Automation tools
+```
+
+## For Humans (Without AI Agent)
+
+1. Create experiment: `./scripts/create_experiment.sh EXP002 EXP001 "description"`
+2. Implement: `src/experiments/EXP002/model.py`
+3. Configure: `configs/experiment/EXP002.yaml`
+4. Validate: `python3 scripts/validate.py EXP002`
+5. Submit: `python3 scripts/submit.py -e EXP002 -d "4x3090" -c soda`
+
+## Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/setup.py` | Interactive project configuration |
+| `scripts/create_experiment.sh` | Scaffold new experiment |
+| `scripts/validate.py` | Verify experiment structure |
+| `scripts/submit.py` | Submit SLURM jobs |
+| `scripts/check_servers.py` | Check GPU availability |
+| `scripts/check_creds.py` | Verify credentials are set |
 
 ---
 **Maintained by:** Ganghyun Kim (Kyle Kim)

@@ -1,7 +1,17 @@
 # @package _global_
+# EXP001: CIFAR-10 Baseline CNN
 defaults:
   - override /model: default
+  - override /data: default
 
 experiment_name: "EXP001"
+
 model:
   _target_: src.experiments.EXP001.model.Model
+  num_classes: 10
+  hidden_dim: 128
+  lr: 1e-3
+  weight_decay: 1e-4
+
+trainer:
+  max_epochs: 50

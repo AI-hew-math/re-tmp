@@ -1,0 +1,102 @@
+name: SLURM Job Status
+
+on:
+  repository_dispatch:
+    types: [slurm-job-completed, slurm-job-failed]
+
+jobs:
+  update-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Issue on Completion
+        if: github.event.action == 'slurm-job-completed'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const payload = context.payload.client_payload;
+            const issueNum = payload.issue;
+            
+            if (!issueNum) {
+              console.log('No issue number in payload, skipping');
+              return;
+            }
+            
+            // Remove running label
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNum,
+                name: 'status/running'
+              });
+            } catch (e) {
+              console.log('Could not remove status/running label:', e.message);
+            }
+            
+            // Add done label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNum,
+              labels: ['status/done']
+            });
+            
+            // Add comment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNum,
+              body: `✅ **Job completed**\n\n| Field | Value |\n|-------|-------|\n| Job ID | ${payload.job_id} |\n| Job Name | ${payload.job_name} |\n| Cluster | ${payload.cluster} |\n| Nodes | ${payload.nodes?.join(', ') || 'N/A'} |\n| Runtime | ${payload.runtime || 'N/A'} |\n| State | ${payload.state} |`
+            });
+
+      - name: Update Issue on Failure
+        if: github.event.action == 'slurm-job-failed'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const payload = context.payload.client_payload;
+            const issueNum = payload.issue;
+            
+            if (!issueNum) {
+              console.log('No issue number in payload, skipping');
+              return;
+            }
+            
+            // Remove running label
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNum,
+                name: 'status/running'
+              });
+            } catch (e) {
+              console.log('Could not remove status/running label:', e.message);
+            }
+            
+            // Add failed label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNum,
+              labels: ['status/failed']
+            });
+            
+            // Determine failure reason and suggestion
+            let suggestion = '';
+            const state = payload.state?.toUpperCase() || '';
+            if (state.includes('TIMEOUT')) {
+              suggestion = '\n\n**Suggestion:** Increase `--time` limit or add checkpointing.';
+            } else if (state.includes('OUT_OF_MEMORY') || state.includes('OOM')) {
+              suggestion = '\n\n**Suggestion:** Reduce batch size, enable gradient checkpointing, or request more memory.';
+            } else if (state.includes('NODE_FAIL')) {
+              suggestion = '\n\n**Suggestion:** Resubmit the job — this was a hardware failure.';
+            }
+            
+            // Add comment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNum,
+              body: `❌ **Job failed**\n\n| Field | Value |\n|-------|-------|\n| Job ID | ${payload.job_id} |\n| Job Name | ${payload.job_name} |\n| Cluster | ${payload.cluster} |\n| Nodes | ${payload.nodes?.join(', ') || 'N/A'} |\n| State | ${payload.state} |${suggestion}`
+            });

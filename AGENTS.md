@@ -408,3 +408,8 @@ python scripts/lit_index.py
 python scripts/lit_index.py --check
 ```
 Fails if experiments cite papers not in database.
+
+## Memex Integration
+
+> **Note:** This repo must stay up-to-date. A clone exists in `memex/me/projects/` for agent memory search purposes only — the GitHub repo is the source of truth.
+

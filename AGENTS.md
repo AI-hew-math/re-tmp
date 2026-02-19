@@ -115,6 +115,13 @@ data_dir: "/data/${oc.env:USER}/datasets"  # Resolves to /data/gankim/datasets
 ```
 No hardcoded usernames. Paths resolve automatically per user.
 
+### Test Before Submit
+**Before any `sbatch`, always do a quick `srun` test** with 1-2 samples to verify data loading, key names, and paths:
+```bash
+srun -p R3090 --gres=gpu:1 --mem=16G --cpus-per-task=4 python3 src/train.py experiment=EXPXXX trainer.fast_dev_run=true
+```
+This catches config errors, missing files, and tensor mismatches before wasting queue time.
+
 ## Baseline Experiment (EXP001)
 
 The template includes a working CIFAR-10 baseline to verify the pipeline:

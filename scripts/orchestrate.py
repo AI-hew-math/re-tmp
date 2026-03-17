@@ -1,28 +1,26 @@
 ﻿from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
 import sys
 
-
-ROOT = Path(__file__).resolve().parents[1]
-STATE_DIR = ROOT / "state"
-TASKS_PATH = STATE_DIR / "tasks.yaml"
-CLAIMS_PATH = STATE_DIR / "claims.yaml"
-VERDICTS_PATH = STATE_DIR / "verdicts.yaml"
+from state_utils import as_bool, as_list, load_state_items, StateParseError
 
 
 @dataclass
 class Task:
     id: str
     title: str
+    kind: str
     status: str
     owner: str
+    reviewer: str
     updated_at: str
+    why: str
+    success: str
     next_action: str
     blockers: list[str]
+    validation: list[str]
     links: list[str]
-    extra: dict[str, object]
 
 
 @dataclass
@@ -32,101 +30,56 @@ class Claim:
     status: str
     evidence: list[str]
     updated_at: str
+    confidence: str
+    review_required: bool
+    reviewer: str
     notes: str
 
 
-def parse_top_level_items(path: Path, section_name: str) -> list[dict[str, object]]:
-    lines = path.read_text(encoding="utf-8-sig").splitlines()
-    if not lines or lines[0].strip() != f"{section_name}:":
-        raise ValueError(f"{path.relative_to(ROOT)} must start with '{section_name}:'")
-
-    items: list[dict[str, object]] = []
-    current: dict[str, object] | None = None
-    current_list_key: str | None = None
-
-    for raw_line in lines[1:]:
-        if not raw_line.strip():
-            continue
-
-        indent = len(raw_line) - len(raw_line.lstrip(" "))
-        line = raw_line.strip()
-
-        if indent == 2 and line.startswith("- "):
-            current = {}
-            items.append(current)
-            current_list_key = None
-            remainder = line[2:]
-            if ":" in remainder:
-                key, value = remainder.split(":", 1)
-                current[key.strip()] = value.strip()
-            continue
-
-        if current is None:
-            continue
-
-        if indent == 4 and line.endswith(":"):
-            key = line[:-1].strip()
-            current[key] = []
-            current_list_key = key
-            continue
-
-        if indent == 4 and ":" in line:
-            key, value = line.split(":", 1)
-            value = value.strip()
-            if value == "[]":
-                current[key.strip()] = []
-            else:
-                current[key.strip()] = value
-            current_list_key = None
-            continue
-
-        if indent == 6 and line.startswith("- ") and current_list_key:
-            value = line[2:].strip()
-            casted_list = current.setdefault(current_list_key, [])
-            if isinstance(casted_list, list):
-                casted_list.append(value)
-
-    return items
-
 
 def load_tasks() -> list[Task]:
-    raw_tasks = parse_top_level_items(TASKS_PATH, "tasks")
-    tasks: list[Task] = []
-    for item in raw_tasks:
-        tasks.append(
-            Task(
-                id=str(item.get("id", "")),
-                title=str(item.get("title", "")),
-                status=str(item.get("status", "")),
-                owner=str(item.get("owner", "")),
-                updated_at=str(item.get("updated_at", "")),
-                next_action=str(item.get("next_action", "")),
-                blockers=list(item.get("blockers", [])) if isinstance(item.get("blockers", []), list) else [],
-                links=list(item.get("links", [])) if isinstance(item.get("links", []), list) else [],
-                extra={k: v for k, v in item.items() if k not in {"id", "title", "status", "owner", "updated_at", "next_action", "blockers", "links"}},
-            )
+    raw_tasks = load_state_items("tasks.yaml", "tasks")
+    return [
+        Task(
+            id=str(item.get("id", "")),
+            title=str(item.get("title", "")),
+            kind=str(item.get("kind", "")),
+            status=str(item.get("status", "")),
+            owner=str(item.get("owner", "")),
+            reviewer=str(item.get("reviewer", "")),
+            updated_at=str(item.get("updated_at", "")),
+            why=str(item.get("why", "")),
+            success=str(item.get("success", "")),
+            next_action=str(item.get("next_action", "")),
+            blockers=as_list(item.get("blockers", [])),
+            validation=as_list(item.get("validation", [])),
+            links=as_list(item.get("links", [])),
         )
-    return tasks
+        for item in raw_tasks
+    ]
+
 
 
 def load_claims() -> list[Claim]:
-    raw_claims = parse_top_level_items(CLAIMS_PATH, "claims")
-    claims: list[Claim] = []
-    for item in raw_claims:
-        claims.append(
-            Claim(
-                id=str(item.get("id", "")),
-                claim=str(item.get("claim", "")),
-                status=str(item.get("status", "")),
-                evidence=list(item.get("evidence", [])) if isinstance(item.get("evidence", []), list) else [],
-                updated_at=str(item.get("updated_at", "")),
-                notes=str(item.get("notes", "")),
-            )
+    raw_claims = load_state_items("claims.yaml", "claims")
+    return [
+        Claim(
+            id=str(item.get("id", "")),
+            claim=str(item.get("claim", "")),
+            status=str(item.get("status", "")),
+            evidence=as_list(item.get("evidence", [])),
+            updated_at=str(item.get("updated_at", "")),
+            confidence=str(item.get("confidence", "")),
+            review_required=as_bool(item.get("review_required", False)),
+            reviewer=str(item.get("reviewer", "")),
+            notes=str(item.get("notes", "")),
         )
-    return claims
+        for item in raw_claims
+    ]
 
 
-def score_task(task: Task) -> tuple[int, int]:
+
+def score_task(task: Task) -> tuple[int, int, int]:
     status_rank = {
         "ready": 0,
         "pending": 1,
@@ -141,15 +94,16 @@ def score_task(task: Task) -> tuple[int, int]:
         "claude": 3,
         "human": 4,
     }.get(task.owner, 5)
-    return (status_rank, owner_rank)
+    risk_rank = 0 if task.kind in {"research", "review", "claim"} else 1
+    return (status_rank, owner_rank, risk_rank)
+
 
 
 def recommend_owner(task: Task) -> str:
-    execution_markers = ("implement", "edit", "run", "validate", "debug", "train", "test", "fix", "scaffold")
-    text = f"{task.title} {task.next_action}".lower()
-    if any(marker in text for marker in execution_markers):
+    if task.kind in {"implementation", "experiment", "debug", "validation"}:
         return "claude"
     return "codex"
+
 
 
 def summarize_claim_context(claims: list[Claim]) -> str:
@@ -158,16 +112,17 @@ def summarize_claim_context(claims: list[Claim]) -> str:
     open_claims = [claim for claim in claims if claim.status in {"provisional", "needs_review"}]
     if open_claims:
         claim = open_claims[0]
-        return f"Focus claim: {claim.id} [{claim.status}] - {claim.claim}"
+        return f"Focus claim: {claim.id} [{claim.status}, confidence={claim.confidence}] - {claim.claim}"
     claim = claims[0]
-    return f"Latest claim: {claim.id} [{claim.status}] - {claim.claim}"
+    return f"Latest claim: {claim.id} [{claim.status}, confidence={claim.confidence}] - {claim.claim}"
+
 
 
 def main() -> int:
     try:
         tasks = load_tasks()
         claims = load_claims()
-    except ValueError as exc:
+    except StateParseError as exc:
         print(f"[FAIL] {exc}")
         return 1
 
@@ -182,13 +137,23 @@ def main() -> int:
     print("# Research Orchestrator Summary")
     print()
     print(f"Next task: {next_task.id} - {next_task.title}")
+    print(f"Kind: {next_task.kind}")
     print(f"Current status: {next_task.status}")
     print(f"Recorded owner: {next_task.owner}")
     print(f"Suggested owner: {suggested_owner}")
+    print(f"Reviewer: {next_task.reviewer}")
     print(f"Updated at: {next_task.updated_at}")
     print()
+    print("Why this task matters")
+    print(f"- {next_task.why}")
+    print("Success condition")
+    print(f"- {next_task.success}")
     print("Next action")
     print(f"- {next_task.next_action}")
+    if next_task.validation:
+        print("Required validation")
+        for item in next_task.validation:
+            print(f"- {item}")
     if next_task.blockers:
         print("Blockers")
         for blocker in next_task.blockers:
@@ -200,13 +165,13 @@ def main() -> int:
     print()
     print(summarize_claim_context(claims))
     print()
+    print("Handoff")
     if suggested_owner == "claude":
-        print("Handoff")
-        print("- Send this task to Claude for implementation/execution.")
-        print("- Ask Claude to return a compact packet with changes, validations, observations, and blockers.")
+        print("- Send this task to Claude for bounded implementation or execution.")
+        print("- Require Claude to report validations, evidence paths, and blockers before the task can move to done.")
+        print(f"- Return review to {next_task.reviewer}.")
     else:
-        print("Handoff")
-        print("- Keep this with Codex for planning/review/state updates before delegating execution.")
+        print("- Keep this with Codex for planning, review, or claim-state updates before delegating execution.")
 
     return 0
 

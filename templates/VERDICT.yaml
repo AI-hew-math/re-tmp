@@ -1,0 +1,11 @@
+﻿id: VERDICT-XXXX
+reviewed_item: TASK-XXXX
+decision: keep_open
+status: active
+rationale: Why this verdict was made
+evidence:
+  - state/tasks.yaml
+updated_at: YYYY-MM-DD
+reviewer: codex
+follow_up:
+  - TASK-YYYY

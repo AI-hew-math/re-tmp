@@ -3,11 +3,13 @@
 > Agent: Read this FIRST every session. Update IMMEDIATELY after any significant action.
 
 ## Check First
-- Run `python scripts/orchestrate.py` to confirm the next research action
+- Run `python scripts/orchestrate.py`
+- Run `python scripts/check_task_quality.py`
+- Run `python scripts/review_gate.py`
 
 ## Current Focus
-- Establish Codex as orchestrator and Claude as executor for research automation
+- Harden the fast-approval workflow so research can move quickly without drifting
 
 ## Next Actions
-- Finalize project-specific onboarding and research question
-- Start routing new tasks through `state/tasks.yaml` and `state/verdicts.yaml`
+- Finish project-specific onboarding and first real research task
+- Start using verdicts and gate scripts before marking tasks or claims complete

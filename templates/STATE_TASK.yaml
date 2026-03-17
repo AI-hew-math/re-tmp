@@ -1,9 +1,15 @@
 ﻿id: TASK-XXXX
 title: Short task title
+kind: research
 status: pending
-owner: unassigned
+owner: codex
+reviewer: human
 updated_at: YYYY-MM-DD
+why: Why this task matters for the research direction
+success: What concrete outcome means this task succeeded
 next_action: One concrete next step
 blockers: []
+validation:
+  - One required check before approval
 links:
   - memory/NOW.md

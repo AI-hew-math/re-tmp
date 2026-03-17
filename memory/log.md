@@ -43,3 +43,14 @@
 ### Notes
 - The next practical step is to encode the first real research task and run the loop end-to-end
 
+
+## 2026-03-18 (Safety Gates)
+
+### Done
+- Added stronger task, claim, and verdict schemas
+- Added quality and review gate scripts for fast but safer approvals
+- Added documentation for testing the LLM-agent system itself
+
+### Notes
+- The next strong test is to run one real research task end-to-end through the new gates
+

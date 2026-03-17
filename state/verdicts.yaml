@@ -3,11 +3,12 @@
     reviewed_item: TASK-BOOTSTRAP
     decision: keep_open
     status: active
-    rationale: The repository structure is now stronger, but onboarding and project-specific research context are still incomplete.
+    rationale: The repository safety rails are stronger, but onboarding and project-specific research context are still incomplete.
     evidence:
       - state/tasks.yaml
       - memory/NOW.md
       - docs/research-automation-architecture.md
-    updated_at: 2026-03-17
+    updated_at: 2026-03-18
+    reviewer: codex
     follow_up:
       - TASK-BOOTSTRAP

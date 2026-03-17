@@ -52,39 +52,33 @@ Tracks open work.
 Required fields per task:
 - `id`
 - `title`
+- `kind`
 - `status`
 - `owner`
+- `reviewer`
 - `updated_at`
+- `why`
+- `success`
 - `next_action`
 
-Optional but recommended:
+Recommended fields:
 - `blockers`
+- `validation`
 - `links`
-- `kind`
-- `priority`
-
-Suggested statuses:
-- `pending`
-- `ready`
-- `in_progress`
-- `blocked`
-- `done`
-
-Suggested owners:
-- `codex`
-- `claude`
-- `human`
-- `shared`
-- `unassigned`
 
 ### `state/claims.yaml`
 Tracks research claims and evidence.
 
-Suggested statuses:
-- `provisional`
-- `supported`
-- `rejected`
-- `needs_review`
+Required fields per claim:
+- `id`
+- `claim`
+- `status`
+- `evidence`
+- `updated_at`
+- `confidence`
+- `review_required`
+- `reviewer`
+- `notes`
 
 ### `state/verdicts.yaml`
 Tracks decisions made from evidence.
@@ -93,16 +87,8 @@ Each verdict should answer:
 - what was reviewed
 - what decision was made
 - which evidence justified it
+- who reviewed it
 - what follow-up task was created
-
-### `state/session_capsules/`
-One YAML packet per meaningful session or execution burst.
-
-Each capsule should contain:
-- what changed
-- what was observed
-- what remains blocked
-- what should happen next
 
 ## Workflow Loop
 
@@ -112,51 +98,22 @@ Each capsule should contain:
 4. Claude performs the task and emits a compact result packet.
 5. Codex reviews the packet and evidence.
 6. Codex updates claims, verdicts, and next tasks.
-7. The loop repeats.
+7. Gate scripts are run before advancing important items.
+8. The loop repeats.
 
-## Decision Rules
+## Safety Rules
 
-### Codex should own
-- experiment prioritization
-- interpretation of ambiguous results
-- whether a claim is accepted, revised, or rejected
-- whether to pivot, repeat, or scale an experiment
+- No work without a task.
+- No direction change without `why` and `success`.
+- No implementation completion without validation.
+- No finalized claim without evidence and verdict.
+- Prefer different owner and reviewer when possible.
 
-### Claude should own
-- implementation details inside the current task boundary
-- validation and test execution
-- narrow debugging loops
-- translating a research task into repository edits
-
-## Minimal Packet Contract
-
-A Claude execution result should be easy for Codex to consume.
-
-Recommended packet shape:
-
-```yaml
-session_id: SESSION-YYYYMMDD-HHMM
-task_id: TASK-XXXX
-actor: claude
-summary: One paragraph on what was done
-completed:
-  - concrete action
-observations:
-  - concrete finding
-artifacts:
-  - file path or log path
-next_actions:
-  - suggested follow-up
-```
-
-## Why This Split
-
-This split avoids letting both agents do the same thing.
-
-- Codex spends tokens on reasoning, synthesis, and coordination.
-- Claude spends tokens on implementation and execution.
-- The repository state prevents drift across sessions and tool boundaries.
+See also:
+- `docs/fast-approval-gates.md`
+- `docs/testing-the-research-system.md`
 
 ## Immediate Next Step
 
 Use `python scripts/orchestrate.py` to inspect the current state and generate the next recommended research action.
+Then run the gate scripts before marking important work complete.

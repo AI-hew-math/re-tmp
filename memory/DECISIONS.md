@@ -52,3 +52,18 @@
 
 **Implications**: New automation docs, prompts, and scripts should assume Codex reads and updates state first, then delegates execution tasks to Claude.
 
+
+### 2026-03-18: Add fast approval gates for research automation
+
+**Context**: The project needs to move quickly, but quick approvals can cause direction drift, unsupported claims, and accumulating bugs if there are no automatic gates.
+
+**Decision**: Require task-level why/success/reviewer fields, claim-level confidence/review flags, and gate scripts that block unsupported approvals.
+
+**Reasoning**: This keeps human approval lightweight while forcing the repository state to carry enough structure for review, testing, and post-hoc inspection.
+
+**Alternatives Rejected**:
+- Option A: Trust the chat thread and human judgment alone. Too easy to drift.
+- Option B: Add a heavy workflow engine before the process is proven. Too much complexity too early.
+
+**Implications**: Future tasks, claims, and verdicts should be created in the richer format, and review gates should be run before meaningful items are advanced.
+

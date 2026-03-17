@@ -4,4 +4,7 @@ status: provisional
 evidence:
   - experiments/EXPXXX/README.md
 updated_at: YYYY-MM-DD
+confidence: medium
+review_required: true
+reviewer: codex
 notes: Why this claim is currently believed or what is missing

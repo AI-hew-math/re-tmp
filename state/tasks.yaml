@@ -1,11 +1,19 @@
 ﻿tasks:
   - id: TASK-BOOTSTRAP
     title: Complete project onboarding and local site configuration
+    kind: research
     status: pending
-    owner: unassigned
-    updated_at: 2026-03-17
-    next_action: Create configs/site.yaml with scripts/setup.py and confirm cluster/data choices
+    owner: codex
+    reviewer: human
+    updated_at: 2026-03-18
+    why: We need a concrete project question, cluster choice, and data location before safe automated research can start.
+    success: Onboarding is complete and the first research question is written down in durable project state.
+    next_action: Create configs/site.yaml with scripts/setup.py and confirm cluster, dataset, and initial research objective.
     blockers: []
+    validation:
+      - Confirm configs/site.yaml exists
+      - Confirm research question is recorded in memory/DECISIONS.md or a new task
     links:
       - ONBOARDING.md
       - memory/NOW.md
+      - docs/research-automation-architecture.md

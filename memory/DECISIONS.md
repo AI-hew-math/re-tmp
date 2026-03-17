@@ -37,3 +37,18 @@
 **Reason**: Why this over alternatives
 **Alternatives rejected**: What else was considered
 -->
+
+### 2026-03-17: Use Codex as orchestrator and Claude as executor
+
+**Context**: The project goal is research automation rather than general coding assistance, and the working preference is to keep high-level planning and state management in Codex while using Claude for bounded execution.
+
+**Decision**: Define Codex as the planner, reviewer, and state owner, and Claude as the implementation and execution worker.
+
+**Reasoning**: This separates research judgment from repository execution, keeps long-running state updates centralized, and makes task handoff explicit through repository files instead of chat memory.
+
+**Alternatives Rejected**:
+- Option A: Let both agents freely plan and code. This increases overlap and drift.
+- Option B: Make Claude the default orchestrator. This conflicts with the preferred working style for this project.
+
+**Implications**: New automation docs, prompts, and scripts should assume Codex reads and updates state first, then delegates execution tasks to Claude.
+

@@ -32,3 +32,14 @@
 ### Notes
 - ...
 -->
+
+## 2026-03-17 (Automation Layer)
+
+### Done
+- Added Codex/Claude role documents and a research automation architecture doc
+- Added a verdict ledger and a minimal orchestrator script
+- Updated working memory to route future work through the new orchestration loop
+
+### Notes
+- The next practical step is to encode the first real research task and run the loop end-to-end
+

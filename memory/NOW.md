@@ -3,11 +3,11 @@
 > Agent: Read this FIRST every session. Update IMMEDIATELY after any significant action.
 
 ## Check First
-- Verify validation passes after the state-layer update
+- Run `python scripts/orchestrate.py` to confirm the next research action
 
 ## Current Focus
-- Stabilize the template as a durable multi-agent research workspace
+- Establish Codex as orchestrator and Claude as executor for research automation
 
 ## Next Actions
-- Push the improved template to the public repository
-- Confirm onboarding details when the project-specific research direction is ready
+- Finalize project-specific onboarding and research question
+- Start routing new tasks through `state/tasks.yaml` and `state/verdicts.yaml`

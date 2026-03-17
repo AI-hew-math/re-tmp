@@ -1,4 +1,4 @@
-📋 **PLAN MODE**
+﻿# PLAN MODE
 
 ## Research Question
 [What are we trying to learn?]
@@ -9,7 +9,7 @@
 **Name**: [Descriptive name]
 
 ## Why This Experiment
-- **Gap**: [What's missing from current understanding?]
+- **Gap**: [What is missing from current understanding?]
 - **Timing**: [Why is this the logical next step?]
 - **Expected Impact**: [What will we learn?]
 

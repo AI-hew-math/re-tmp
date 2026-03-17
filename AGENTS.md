@@ -1,95 +1,112 @@
-# AGENTS.md
+﻿# AGENTS.md
 
-> **For AI Coding Agents**: Read this file on every session.
+> For AI coding agents: read this file on every session.
 
 This is the canonical research template for LAIT Lab, optimized for AI coding agents.
 
 ## Session Start Checklist
 
-1. **Read `memory/NOW.md`** - What needs attention this session?
-2. **Read `memory/DECISIONS.md`** - Don't contradict past decisions
-3. **Check `configs/site.yaml`** - If missing, this is first session → read `ONBOARDING.md`
+1. Read `memory/NOW.md`.
+2. Read `memory/DECISIONS.md`.
+3. Read `state/tasks.yaml`.
+4. Check `configs/site.yaml`. If missing, this is the first session, so read `ONBOARDING.md`.
 
 ## Memory System
 
-**CRITICAL**: Sessions can end abruptly (context full, rate limit, user closes). 
-Never wait for "end of session" to update memory. **Update immediately after every significant action.**
+Sessions can end abruptly. Never wait for the end of the session to update state.
 
-```
+`memory/` is the human-readable handoff layer:
+
+```text
 memory/
-├── NOW.md        # What to do NOW (read every session, ~200 tokens)
-├── DECISIONS.md  # Key decisions (read every session, append-only)
-└── log.md        # Full history (append after work, don't read routinely)
+- NOW.md        # What to do now
+- DECISIONS.md  # Append-only decisions
+- log.md        # Session history
 ```
 
-### When to Update
+`state/` is the machine-readable handoff layer:
+
+```text
+state/
+- tasks.yaml            # Open tasks, blockers, owners, next action
+- claims.yaml           # Research claims and evidence
+- session_capsules/     # One YAML packet per meaningful session
+```
+
+### When To Update
 
 | Action | Update |
 |--------|--------|
-| Submit experiment | NOW.md: add "check job X" |
-| Make decision | DECISIONS.md: append decision + reasoning |
-| Complete experiment | NOW.md: update focus, log.md: add results |
-| Design next step | NOW.md: update next actions |
-| Finish significant work | log.md: append what was done |
+| Submit experiment | `memory/NOW.md`, `state/tasks.yaml` |
+| Make decision | `memory/DECISIONS.md`, optionally `state/claims.yaml` |
+| Complete experiment | `memory/NOW.md`, `memory/log.md`, `state/claims.yaml`, `state/tasks.yaml` |
+| Finish significant work | `memory/log.md`, `state/session_capsules/` |
 
 ### NOW.md Structure
+
 ```markdown
 ## Check First
 - EXP002 job 12345 on vegi - done?
 
-## Current Focus  
+## Current Focus
 - Implementing EXP003
 
 ## Next Actions
-- If EXP002 done → log results
+- If EXP002 done -> log results
 - Submit EXP003 when ready
 ```
 
-Keep it under 200 tokens. Remove completed items. This is "working memory."
+Keep it under 200 tokens. Remove completed items.
 
 ### DECISIONS.md
-Append-only. Never delete. Use exact format from `templates/DECISION.md`.
 
-## Templates (CRITICAL)
+Append-only. Never delete. Use the exact format from `templates/DECISION.md`.
 
-**NEVER write documentation from scratch.** Always copy from `templates/` and fill in.
+## Templates
 
-```
+Never write documentation from scratch. Copy from `templates/` and fill in.
+
+```text
 templates/
-├── EXPERIMENT_README.md  # Copy for new experiment docs
-├── DECISION.md           # Copy for each decision entry
-├── STATUS_HISTORY.md     # Copy for STATUS.md history entries
-├── SESSION_LOG.md        # Copy for memory/log.md entries
-└── PLAN_MODE.md          # Copy for plan mode output
+- EXPERIMENT_README.md
+- DECISION.md
+- STATUS_HISTORY.md
+- SESSION_LOG.md
+- PLAN_MODE.md
+- STATE_TASK.yaml
+- STATE_CLAIM.yaml
+- SESSION_CAPSULE.yaml
 ```
-
-This ensures consistency. Do not invent your own formats.
 
 ## Environment Setup
 
-### Clone & Configure
+### Clone And Configure
+
 ```bash
-# ALWAYS place code in /workspace for persistence
 ssh <cluster>  # soda, vegi, or potato
 cd /workspace/$USER
 git clone <repo-url>
 cd <repo-name>
 uv sync
+uv run python3 scripts/setup.py
 ```
 
 ### Credentials
-Before any training, verify credentials are configured:
+
+Before any training:
+
 ```bash
 python3 scripts/check_creds.py
 ```
 
 Required secrets in `.env`:
-- `WANDB_API_KEY` - Weights & Biases logging
-- `HF_TOKEN` - HuggingFace model access (optional)
+- `WANDB_API_KEY`
+- `HF_TOKEN` (optional)
 
 ## Infrastructure
 
 ### Clusters
+
 | Cluster | Partitions | GPUs | SSH |
 |---------|------------|------|-----|
 | soda | `R3090`, `A100` | 10x 3090, 8x A100 | `ssh soda` |
@@ -97,76 +114,74 @@ Required secrets in `.env`:
 | potato | `A6000` | 12x A6000 | `ssh potato` |
 
 ### Storage Hierarchy
+
 | Path | Purpose | Speed |
 |------|---------|-------|
 | `/workspace/$USER` | Code, configs, venvs | Fast |
-| `/data/$USER` | Training data (LOCAL) | Fastest |
+| `/data/$USER` | Training data (local) | Fastest |
 | `/nas1`, `/nas2` | Archival datasets | Slow |
 
-**CRITICAL**: Copy data from NAS to local scratch before training:
+Copy data from NAS to local scratch before training:
+
 ```bash
 rsync -av /nas1/public/datasets/my_dataset /data/$USER/
 ```
 
 ### Path Handling
-All configs use `${oc.env:USER}` for automatic user-based paths:
+
+All configs should use `${oc.env:USER}` for user-dependent paths:
+
 ```yaml
-data_dir: "/data/${oc.env:USER}/datasets"  # Resolves to /data/gankim/datasets
+data_dir: "/data/${oc.env:USER}/datasets"
 ```
-No hardcoded usernames. Paths resolve automatically per user.
+
+No hardcoded usernames.
 
 ### Test Before Submit
-**Before any `sbatch`, always do a quick `srun` test** with 1-2 samples to verify data loading, key names, and paths:
+
+Before any `sbatch`, do a quick `srun` test:
+
 ```bash
 srun -p R3090 --gres=gpu:1 --mem=16G --cpus-per-task=4 python3 src/train.py experiment=EXPXXX trainer.fast_dev_run=true
 ```
-This catches config errors, missing files, and tensor mismatches before wasting queue time.
 
-## Baseline Experiment (EXP001)
+## Baseline Experiment
 
-The template includes a working CIFAR-10 baseline to verify the pipeline:
+The template includes a working CIFAR-10 baseline:
+
 ```bash
-# Quick validation (CPU, 1 batch)
 uv run python3 src/train.py experiment=EXP001 trainer.accelerator=cpu trainer.fast_dev_run=true
-
-# Full training
 python3 scripts/submit.py --experiment EXP001 --device "1x3090" --cluster soda
 ```
-CIFAR-10 downloads automatically. Expected: ~85% accuracy in 50 epochs.
+
+Expected result: about 85% accuracy in 50 epochs.
 
 ## Research Loop
 
-The core workflow follows the scientific method:
-
-```
-Understand Context → Design Experiment → Document Hypothesis → Run → Log Results
+```text
+Understand Context -> Design Experiment -> Document Hypothesis -> Run -> Log Results
 ```
 
-### 1. Understand Context (First Session)
+### 1. Understand Context
 
-Before any experiments, understand the research:
-- What problem is the user solving?
-- What papers are relevant? (Add to `literature/papers.yaml`)
-- What has been tried? What's the baseline?
+Before any experiments, understand:
+- the problem,
+- relevant papers,
+- the baseline,
+- what has already been tried.
 
-**Ask questions until you fully understand the research direction.**
+### 2. Plan Mode
 
-### 2. Plan Mode (REQUIRED Before Any Experiment)
+Before creating any experiment, enter Plan Mode.
 
-Before creating any experiment, enter **Plan Mode**. 
+Copy `templates/PLAN_MODE.md`, fill it in, and wait for confirmation.
 
-**Copy the template from `templates/PLAN_MODE.md` and fill it in.**
+### 3. Document Before Running
 
-Do NOT skip Plan Mode. Even if user says "just do X", output the plan first and wait for confirmation.
-
-### 3. Document BEFORE Running
-
-**CRITICAL**: Before running, the experiment README must have:
-- **Hypothesis**: What do you expect to happen and why?
-- **Method**: What specifically are you changing?
-- **Success criteria**: How will you know if it worked?
-
-This is non-negotiable. No undocumented experiments.
+Before running, the experiment README must include:
+- hypothesis,
+- method,
+- success criteria.
 
 ### 4. Create Experiment
 
@@ -175,61 +190,43 @@ This is non-negotiable. No undocumented experiments.
 ```
 
 Creates:
-- `src/experiments/EXP002/model.py` - Implementation (copied from parent)
-- `configs/experiment/EXP002.yaml` - Hyperparameters
-- `experiments/EXP002/README.md` - Documentation
+- `src/experiments/EXP002/model.py`
+- `configs/experiment/EXP002.yaml`
+- `experiments/EXP002/README.md`
 
-### 5. Implement & Validate
+### 5. Implement And Validate
 
-1. **Edit model**: `src/experiments/EXPXXX/model.py`
-2. **Edit config**: `configs/experiment/EXPXXX.yaml`
-3. **Validate**: `python3 scripts/validate.py EXPXXX`
+1. Edit `src/experiments/EXPXXX/model.py`.
+2. Edit `configs/experiment/EXPXXX.yaml`.
+3. Run `python3 scripts/validate.py EXPXXX`.
 
 ### 6. Submit
 
 ```bash
-python3 scripts/check_servers.py  # Check GPU availability
+python3 scripts/check_servers.py
 git add -A && git commit -m "EXP002: description" && git push
 
-# On cluster
-ssh vegi && cd /workspace/$USER/<repo>
-git pull && uv sync
+ssh vegi
+cd /workspace/$USER/<repo>
+git pull
+uv sync
 python3 scripts/submit.py --experiment EXP002 --device "4x3090" --cluster soda
 ```
 
-### 7. Log Results (CRITICAL)
+### 7. Log Results
 
-After experiment completes:
+After an experiment completes:
 
-1. **Update experiment README** with actual results:
-   ```markdown
-   ## Results
-   - Accuracy: X% (expected Y%)
-   - Training time: Z hours
-   - Observations: ...
-   
-   ## Conclusion
-   Hypothesis [confirmed/rejected]. Next: ...
-   ```
-
-2. **Update STATUS.md**:
-   - Change status: `planned` → `running` → `done`
-   - Add to History section
-
-3. **Commit**: `git commit -m "EXP002: results - [brief finding]"`
-
-### Experiment Lifecycle
-
-| Phase | README Status | STATUS.md |
-|-------|---------------|-----------|
-| Designed | Hypothesis filled | `planned` |
-| Running | - | `running` |
-| Complete | Results filled | `done` |
-| Failed | Results + why | `failed` |
+1. Update `experiments/EXPXXX/README.md`.
+2. Update `STATUS.md`.
+3. Update `state/claims.yaml`, `state/tasks.yaml`, and `state/session_capsules/`.
+4. Append to `memory/log.md`.
+5. Commit the result.
 
 ## Code Style
 
 ### Model Structure
+
 ```python
 from src.core.base_model import BaseModel
 import torch.nn as nn
@@ -237,10 +234,11 @@ import torch.nn as nn
 class Model(BaseModel):
     def __init__(self, hidden_dim: int = 256, **kwargs):
         super().__init__(**kwargs)
-        self.net = nn.Sequential(...)  # Your architecture
+        self.net = nn.Sequential(...)
 ```
 
 ### Config Structure
+
 ```yaml
 # configs/experiment/EXPXXX.yaml
 # @package _global_
@@ -254,169 +252,8 @@ model:
 ```
 
 ### Rules
-- All hyperparameters in YAML configs, not Python
-- Inherit from BaseModel/BaseDataModule
-- Document hypothesis in `experiments/EXPXXX/README.md`
-- Update `STATUS.md` experiment graph after creation
 
-## Testing
-
-### Validation
-```bash
-# Validate experiment structure
-python3 scripts/validate.py EXPXXX
-
-# Dry run (fast_dev_run = 1 batch only)
-uv run python3 src/train.py experiment=EXPXXX trainer.fast_dev_run=true
-```
-
-### Monitoring Running Jobs
-```bash
-# SLURM logs
-tail -f logs/slurm/EXPXXX_*.log
-
-# WandB dashboard (primary metrics)
-# Check project: dl-research
-```
-
-## Commit Guidelines
-
-Format: `EXPXXX: brief description`
-
-Examples:
-- `EXP002: add attention mechanism to encoder`
-- `EXP003: ablate learning rate schedule`
-- `fix: correct data path in config`
-
-## Directory Structure
-
-```
-├── src/
-│   ├── core/           # IMMUTABLE base classes
-│   │   ├── base_model.py
-│   │   └── base_data.py
-│   ├── experiments/    # Experiment implementations
-│   │   └── EXPXXX/
-│   │       └── model.py
-│   └── train.py        # Main training entry
-├── configs/
-│   ├── config.yaml     # Root config
-│   ├── experiment/     # Per-experiment overrides
-│   ├── model/
-│   ├── data/
-│   └── trainer/
-├── experiments/        # Documentation & results
-│   └── EXPXXX/
-│       └── README.md
-├── scripts/
-│   ├── create_experiment.sh
-│   ├── submit.py
-│   ├── validate.py
-│   └── check_servers.py
-├── STATUS.md           # Experiment lineage graph
-└── outputs/            # Checkpoints & artifacts
-```
-
-## Retrieving Results
-
-Sync outputs back to local machine:
-```bash
-rsync -avz vegi:/workspace/$USER/<repo>/outputs/ ./outputs/
-```
-
-## Literature Management
-
-Literature is **integrated** with experiments, not a separate concern.
-
-### Structure
-```
-literature/
-├── papers.yaml        # Paper database (metadata + repo links)
-├── papers/            # Detailed notes for important papers
-│   ├── .template.md   # Template for paper notes
-│   └── <key>.md       # Deep-dive: method, code snippets, relevance
-├── related-work.md    # Survey narrative (created by setup.py)
-└── index.md           # Auto-generated reverse index
-```
-
-### Adding a Paper (Agent Workflow)
-
-When user shares an arxiv link or asks to add a paper:
-
-**Step 1: Fetch paper and create notes**
-```bash
-uv run python scripts/fetch_paper.py <arxiv-id-or-url> --key <short-key> --create --full
-```
-
-Example:
-```bash
-uv run python scripts/fetch_paper.py 1706.03762 --key transformer --create --full
-```
-
-This automatically:
-- Fetches title, authors, abstract from arxiv API
-- Downloads full tex source
-- Outputs YAML to paste into `papers.yaml`
-- Creates `papers/<key>.md` with template pre-filled + full source embedded
-
-**Step 2: Update papers.yaml**
-
-Copy the YAML output from the script into `literature/papers.yaml`:
-```yaml
-transformer:
-  title: "Attention Is All You Need"
-  authors: "Vaswani et al."
-  year: 2017
-  venue: NeurIPS  # Update from "arXiv" once published
-  arxiv: "1706.03762"
-  repo: "https://github.com/tensorflow/tensor2tensor"  # Search GitHub for official repo
-  tags: [attention, architecture]  # Use: architecture, training, data, vision, nlp, efficiency
-  notes: "Self-attention replaces recurrence"
-  details: papers/transformer.md
-```
-
-**Step 3: Write contextualized summary**
-
-Open `literature/papers/<key>.md` and fill in:
-- **Summary (In Context)** - Why this paper matters *for this project*, not generic abstract
-- **Code to Borrow** - Actual snippets worth adapting
-- **Relevance to Our Experiments** - Which experiments could use this
-
-The full paper tex is already saved in the collapsible section at the bottom.
-
-**Step 4: Commit**
-```bash
-git add literature/ && git commit -m "lit: add <paper-name>"
-```
-
-**Step 3: Cite in experiments**
-
-In `experiments/EXPXXX/README.md`:
-```markdown
-## References
-- [@transformer] - Using self-attention for feature extraction
-```
-
-**Step 4: Regenerate index**
-```bash
-python scripts/lit_index.py
-```
-
-### Quick Add vs Deep Add
-
-| Scenario | Action |
-|----------|--------|
-| Background reference | Add to `papers.yaml` only |
-| Building on this paper | Add to yaml + create `papers/<key>.md` |
-| Implementing their method | Full notes with code snippets |
-
-### Validation
-```bash
-python scripts/lit_index.py --check
-```
-Fails if experiments cite papers not in database.
-
-## Memex Integration
-
-> **Note:** This repo must stay up-to-date. A clone exists in `memex/me/projects/` for agent memory search purposes only — the GitHub repo is the source of truth.
-
+- Keep hyperparameters in YAML.
+- Inherit from `BaseModel` and `BaseDataModule`.
+- Document the hypothesis before running.
+- Update `STATUS.md` and state ledgers after significant progress.

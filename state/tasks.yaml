@@ -1,0 +1,11 @@
+﻿tasks:
+  - id: TASK-BOOTSTRAP
+    title: Complete project onboarding and local site configuration
+    status: pending
+    owner: unassigned
+    updated_at: 2026-03-17
+    next_action: Create configs/site.yaml with scripts/setup.py and confirm cluster/data choices
+    blockers: []
+    links:
+      - ONBOARDING.md
+      - memory/NOW.md

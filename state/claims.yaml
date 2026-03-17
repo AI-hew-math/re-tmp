@@ -1,0 +1,9 @@
+﻿claims:
+  - id: CLAIM-EXP001-BASELINE
+    claim: EXP001 provides a working CIFAR-10 baseline for verifying the template end-to-end.
+    status: provisional
+    evidence:
+      - experiments/EXP001/README.md
+      - STATUS.md
+    updated_at: 2026-03-17
+    notes: Promote to supported once the baseline is rerun in the target environment and metrics are logged.

@@ -1,0 +1,11 @@
+﻿session_id: SESSION-YYYYMMDD-HHMM
+date: YYYY-MM-DD
+summary: One paragraph on what changed
+completed:
+  - Concrete completed action
+decisions:
+  - Link or note for a decision made
+artifacts:
+  - memory/log.md
+next_actions:
+  - Most important follow-up

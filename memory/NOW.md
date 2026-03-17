@@ -1,17 +1,13 @@
-# NOW
+﻿# NOW
 
 > Agent: Read this FIRST every session. Update IMMEDIATELY after any significant action.
 
 ## Check First
-<!-- What needs checking this session? -->
-- (none yet)
+- Verify validation passes after the state-layer update
 
 ## Current Focus
-<!-- What are we working on? -->
-- Project setup / onboarding
+- Stabilize the template as a durable multi-agent research workspace
 
 ## Next Actions
-<!-- What should happen next? -->
-- Complete onboarding (see ONBOARDING.md)
-- Discuss research context with user
-- Add relevant papers to literature/
+- Push the improved template to the public repository
+- Confirm onboarding details when the project-specific research direction is ready

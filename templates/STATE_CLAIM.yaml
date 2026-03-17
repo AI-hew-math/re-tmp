@@ -1,0 +1,7 @@
+﻿id: CLAIM-XXXX
+claim: One falsifiable project claim
+status: provisional
+evidence:
+  - experiments/EXPXXX/README.md
+updated_at: YYYY-MM-DD
+notes: Why this claim is currently believed or what is missing

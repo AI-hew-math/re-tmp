@@ -1,16 +1,22 @@
-# Deep Learning Research Template
+﻿# Deep Learning Research Template
 
-Standardized PyTorch Lightning template for LAIT Lab experiments. Designed for reproducibility and **AI coding agent compatibility**.
+Standardized PyTorch Lightning template for LAIT Lab experiments. Designed for reproducibility and AI coding agent compatibility.
+
+This repository is organized as a small research OS:
+- `memory/` is the short human handoff layer.
+- `state/` is the machine-readable handoff layer for agents.
+- `experiments/` and `literature/` are the durable research record.
 
 ## Prerequisites
 
-- **Python 3.11+** (check: `python3 --version`)
-- **uv** - Fast Python package manager ([install](https://docs.astral.sh/uv/getting-started/installation/))
-  ```bash
-  # macOS/Linux
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-  ```
-- **WandB account** (optional but recommended) - [wandb.ai](https://wandb.ai)
+- Python 3.11+ (`python3 --version`)
+- `uv` ([install guide](https://docs.astral.sh/uv/getting-started/installation/))
+- WandB account (optional but recommended)
+
+```bash
+# macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
 ## Quick Start
 
@@ -24,125 +30,109 @@ cd my-project
 # 2. Install dependencies
 uv sync
 
-# 3. Open your AI coding agent
-claude  # or cursor, code, etc.
-# Agent reads AGENTS.md → ONBOARDING.md and walks you through setup
+# 3. Generate local site config
+uv run python3 scripts/setup.py
 
-# 4. Verify baseline works
+# 4. Open your AI coding agent
+claude  # or cursor, code, codex, etc.
+# Agent reads AGENTS.md -> ONBOARDING.md and walks you through setup
+
+# 5. Verify baseline works
 uv run python3 src/train.py experiment=EXP001 trainer.fast_dev_run=true
 ```
 
-### Manual Setup (Without AI Agent)
+### Manual Setup
 
 If not using an AI agent, see `ONBOARDING.md` for:
-- Cluster selection
-- Data placement strategy  
-- Creating `configs/site.yaml`
-- Setting up `.env` credentials
+- cluster selection,
+- data placement strategy,
+- creating `configs/site.yaml`,
+- setting up `.env` credentials.
 
-## Using with AI Coding Agents
+## Using With AI Coding Agents
 
-This template is optimized for AI agents (Claude Code, Cursor, Copilot, Codex, etc.).
+This template is optimized for Claude Code, Codex, Cursor, Copilot, and similar tools.
 
 ### Setup
 
-1. **Fork/Clone** this template to start a new research project
-2. **Run setup**: `uv run python3 scripts/setup.py` (configures paths, clusters, etc.)
-3. **Open your AI agent** in the project directory:
-   ```bash
-   # Claude Code
-   cd my-project && claude
-
-   # Cursor
-   cursor my-project
-
-   # VS Code + Copilot
-   code my-project
-   ```
+1. Fork or clone this template.
+2. Run `uv run python3 scripts/setup.py` to create `configs/site.yaml`.
+3. Open your AI agent in the project directory.
 
 ### How Agents Use This Template
 
-When an agent opens this project, it reads `AGENTS.md` which contains:
-- Infrastructure details (clusters, storage paths)
-- Standard Operating Procedure (SOP) for experiments
-- Code style rules and validation commands
-- Literature management guidelines
+When an agent opens this project, it reads `AGENTS.md`, which contains:
+- infrastructure details,
+- experiment SOP and validation rules,
+- literature management rules,
+- memory and state update rules.
 
 ### Example Agent Interactions
 
-**Creating a new experiment:**
-```
-You: "Create an experiment that adds attention to the baseline model"
+Creating a new experiment:
 
+```text
+You: "Create an experiment that adds attention to the baseline model"
 Agent: [Reads AGENTS.md, runs create_experiment.sh, edits model.py and config]
 ```
 
-**Running experiments:**
-```
-You: "Check available GPUs and submit EXP002 to vegi"
+Running experiments:
 
+```text
+You: "Check available GPUs and submit EXP002 to vegi"
 Agent: [Runs check_servers.py, then submit.py with correct flags]
 ```
 
-**Literature review:**
-```
-You: "Add this paper to related work: arxiv.org/abs/2401.12345"
+Literature review:
 
+```text
+You: "Add this paper to related work: arxiv.org/abs/2401.12345"
 Agent: [Updates literature/related-work.md with paper details]
 ```
 
-### Key Files for Agents
+### Key Files For Agents
 
 | File | Purpose |
 |------|---------|
-| `AGENTS.md` | **Primary instructions** - agents read this first |
-| `STATUS.md` | Current experiment graph and active thread |
-| `literature/papers.yaml` | Paper database (metadata, repos, links) |
-| `literature/papers/<key>.md` | Detailed paper notes with full content |
+| `AGENTS.md` | Primary instructions |
+| `STATUS.md` | Experiment graph and active thread |
+| `memory/NOW.md` | Short working-memory snapshot |
+| `state/tasks.yaml` | Machine-readable task queue |
+| `state/claims.yaml` | Machine-readable research claims |
+| `literature/papers.yaml` | Paper database |
+| `literature/papers/<key>.md` | Detailed paper notes |
 
 ## Features
 
-- **Hydra configs** - All hyperparameters in YAML, not code
-- **Experiment lineage** - Parent-child tracking in `STATUS.md`
-- **Scaffolding** - `./scripts/create_experiment.sh` auto-generates structure
-- **SLURM integration** - Smart submission via `scripts/submit.py`
-- **WandB logging** - Automatic if `WANDB_API_KEY` is set
-- **Literature tracking** - `papers.yaml` database + detailed notes with full paper content
-- **Arxiv integration** - Auto-fetch paper metadata and tex source
+- Hydra configs for hyperparameters
+- Experiment lineage in `STATUS.md`
+- Scaffolding via `./scripts/create_experiment.sh`
+- SLURM submission helpers
+- Optional WandB logging
+- Literature tracking and arXiv fetch helpers
+- Durable agent state via YAML ledgers for tasks, claims, and session capsules
 
 ## Structure
 
-```
-├── AGENTS.md              # Agent instructions (read this!)
-├── STATUS.md              # Experiment graph + history
-├── src/
-│   ├── core/              # Base classes (don't modify)
-│   │   ├── base_model.py  # Inherit for all models
-│   │   └── base_data.py   # Inherit for all datasets
-│   ├── experiments/       # Your experiment implementations
-│   │   └── EXP001/        # One folder per experiment
-│   └── train.py           # Main training entry point
-├── configs/
-│   ├── config.yaml        # Root config
-│   ├── experiment/        # Per-experiment overrides
-│   ├── model/             # Model configs
-│   ├── data/              # Dataset configs
-│   └── trainer/           # Trainer configs
-├── experiments/           # Documentation per experiment
-│   └── EXP001/README.md   # Hypothesis, method, results
-├── literature/
-│   ├── papers.yaml        # Paper database
-│   ├── papers/            # Detailed notes per paper
-│   └── index.md           # Auto-generated citation index
-└── scripts/               # Automation tools
+```text
+AGENTS.md                  # Agent instructions
+STATUS.md                  # Experiment graph + history
+configs/                   # Hydra config tree + local site config example
+experiments/               # Experiment docs and outcomes
+literature/                # Paper database and notes
+memory/                    # Human-readable session memory
+state/                     # Machine-readable task/claim/session ledgers
+scripts/                   # Automation and validation tools
+src/                       # Training code
+templates/                 # Canonical templates for agents
 ```
 
-## For Humans (Without AI Agent)
+## For Humans
 
 1. Create experiment: `./scripts/create_experiment.sh EXP002 EXP001 "description"`
 2. Implement: `src/experiments/EXP002/model.py`
 3. Configure: `configs/experiment/EXP002.yaml`
-4. Validate: `python3 scripts/validate.py EXP002`
+4. Validate: `uv run python3 scripts/validate.py EXP002`
 5. Submit: `python3 scripts/submit.py -e EXP002 -d "4x3090" -c soda`
 
 ## Scripts
@@ -151,63 +141,60 @@ Agent: [Updates literature/related-work.md with paper details]
 |--------|---------|
 | `scripts/create_experiment.sh` | Scaffold new experiment |
 | `scripts/validate.py` | Verify experiment structure |
+| `scripts/validate_state.py` | Verify agent state ledgers |
 | `scripts/submit.py` | Submit SLURM jobs |
-| `scripts/check_servers.py` | Check GPU availability across clusters |
-| `scripts/check_creds.py` | Verify credentials are set |
-| `scripts/fetch_paper.py` | Fetch arxiv paper metadata + tex source |
+| `scripts/check_servers.py` | Check GPU availability |
+| `scripts/check_creds.py` | Verify credentials |
+| `scripts/setup.py` | Generate local `configs/site.yaml` |
+| `scripts/fetch_paper.py` | Fetch arXiv metadata and tex source |
 | `scripts/lit_index.py` | Generate literature citation index |
 
 ## Troubleshooting
 
-**`uv: command not found`**
+`uv: command not found`
+
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
-source ~/.bashrc  # or restart terminal
+source ~/.bashrc
 ```
 
-**`ModuleNotFoundError` when running scripts**
-```bash
-uv sync  # Ensure dependencies are installed
-uv run python3 <script>  # Use uv run, not python3 directly
-```
+`ModuleNotFoundError` when running scripts
 
-**`Error locating target 'src.core...'` or import errors**
 ```bash
-# Re-sync to install package in editable mode
 uv sync
-# Or reinstall
+uv run python3 <script>
+```
+
+`configs/site.yaml` is missing
+
+```bash
+uv run python3 scripts/setup.py
+```
+
+Import errors for `src.core...`
+
+```bash
+uv sync
 uv pip install -e .
 ```
 
-**Data path issues**
-```bash
-# Make sure you're on a cluster headnode (vegi, soda, potato)
-# /data/$USER should exist there
+Data path issues
 
-# If using custom dataset location:
-uv run python3 src/train.py experiment=EXP001 data.data_dir=/path/to/data ...
+```bash
+uv run python3 src/train.py experiment=EXP001 data.data_dir=/path/to/data
 ```
 
-**Can't connect to cluster**
-```bash
-# Verify SSH config
-ssh soda  # Should connect without password prompt
-# If not, set up SSH keys: ssh-copy-id soda
-```
+WandB not logging
 
-**WandB not logging**
 ```bash
-# Check credentials
 uv run python3 scripts/check_creds.py
-# Ensure .env has WANDB_API_KEY
 ```
 
-**SLURM job fails immediately**
+SLURM job fails immediately
+
 ```bash
-# Check the log
 cat logs/slurm/EXPXXX_*.log
-# Common issues: wrong partition, missing data, OOM
 ```
 
 ---
-**Maintained by:** LAIT Lab
+Maintained by LAIT Lab

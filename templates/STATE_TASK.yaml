@@ -1,0 +1,9 @@
+﻿id: TASK-XXXX
+title: Short task title
+status: pending
+owner: unassigned
+updated_at: YYYY-MM-DD
+next_action: One concrete next step
+blockers: []
+links:
+  - memory/NOW.md

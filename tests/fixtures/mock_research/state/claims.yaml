@@ -1,0 +1,11 @@
+claims:
+  - id: CLAIM-MOCK-BASELINE
+    claim: The mock research workflow should only create execution work after enough plan approvals.
+    status: provisional
+    evidence:
+      - docs/mock-plan.md
+    updated_at: 2026-03-18
+    confidence: medium
+    review_required: true
+    reviewer: codex
+    notes: This claim becomes stronger if the fixture flow passes end to end.

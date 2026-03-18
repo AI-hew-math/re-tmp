@@ -1,0 +1,11 @@
+session_id: SESSION-MOCK-001
+date: 2026-03-18
+summary: Baseline mock capsule so validate_state.py can verify session capsule schema in the fixture workspace.
+completed:
+  - Added a mock plan fixture
+decisions:
+  - Use the mock research fixture for workflow replay
+artifacts:
+  - docs/mock-plan.md
+next_actions:
+  - Approve the plan and generate an execution task

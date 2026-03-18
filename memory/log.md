@@ -110,3 +110,18 @@
 
 ### Notes
 - The next live step is to fill out `PLAN-BOOTSTRAP-001`, add reviews, and only then advance onboarding execution
+
+
+## 2026-03-18 (Mock Research Replay)
+
+### Done
+- Added a fixture-based unittest for a mock research workflow
+- Verified draft plans cannot generate execution work
+- Verified approvals unlock execution task generation and run scaffolding
+- Verified failure injection still trips the review gate
+
+### Decisions
+- Added a replayable mock research benchmark for plan-first automation debugging
+
+### Notes
+- This is now the safest first thing to run in Claude Code before touching the live onboarding plan

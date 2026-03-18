@@ -1,0 +1,1 @@
+Mock fixture templates placeholder.

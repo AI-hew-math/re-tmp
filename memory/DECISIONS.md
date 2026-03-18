@@ -115,6 +115,21 @@
 **Implications**: Future experiment or implementation tasks should be linked to `plan_id`, and reviewers should work through `state/plan_reviews.yaml` before execution begins.
 
 
+### 2026-03-18: Add a mock research replay test for the planning workflow
+
+**Context**: The repository now has plan review gates and execution generation, but the safest way to debug them is through a repeatable dry-run instead of live project state alone.
+
+**Decision**: Add a fixture-based unittest that replays a mock research workflow from draft plan to approval, task generation, run creation, and failure injection.
+
+**Reasoning**: This provides a small benchmark that can catch regressions in planning, gating, and execution logic without mutating the real repository state.
+
+**Alternatives Rejected**:
+- Option A: Test only against live state files. Too easy to pollute or overfit to the current repository.
+- Option B: Rely on manual walkthroughs only. Too weak for repeated debugging.
+
+**Implications**: Future changes to planning or review scripts should keep the mock replay passing via `python -m unittest discover -s tests -p "test_*.py"`.
+
+
 ## Infrastructure
 <!-- Cluster, data location, paths -->
 

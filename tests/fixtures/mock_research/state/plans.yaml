@@ -1,0 +1,27 @@
+plans:
+  - id: PLAN-MOCK-001
+    title: Mock onboarding and baseline planning flow
+    status: draft
+    planner: codex
+    updated_at: 2026-03-18
+    research_question: Can the repository enforce a plan review step before execution work exists?
+    hypothesis: A multi-review plan gate will stop execution work until the mock plan has enough distinct approvals.
+    why: This dry run should test the system itself before a real research project relies on it.
+    success: The plan gets approved, creates exactly one execution task, and that task can create a run scaffold.
+    next_action: Add two plan reviews and confirm the gate flips from draft to approved.
+    required_approvals: 2
+    blocking_rejections: 1
+    execution_owner: claude
+    execution_reviewer: codex
+    task_stage: execution
+    task_kind: implementation
+    task_title: Execute the mock research baseline step
+    task_why: We need one bounded execution task to prove the plan-review gate really controls downstream work.
+    task_success: A ready execution task exists and run_task.py can scaffold it after approval.
+    task_next_action: Create a run scaffold and record evidence paths.
+    task_validation:
+      - python -m py_compile src/mock_impl.py
+      - Confirm runs/ contains a new mock run folder
+    links:
+      - docs/mock-plan.md
+    generated_tasks: []

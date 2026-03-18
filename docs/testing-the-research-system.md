@@ -30,6 +30,19 @@ Example benchmark:
 
 A system is healthy if the same benchmark still works after changes.
 
+This repository now includes one such replay:
+
+```bash
+python -m unittest tests.test_mock_research_flow
+```
+
+It checks:
+- draft plan cannot generate execution work,
+- enough approvals flip the plan gate,
+- approved plan generates exactly one execution task,
+- that task can create a run scaffold,
+- a deliberately broken done task is rejected by `review_gate.py`.
+
 ## 3. Failure Injection
 
 Deliberately create bad states and make sure the gates block them.

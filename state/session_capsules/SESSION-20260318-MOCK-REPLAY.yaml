@@ -1,0 +1,19 @@
+session_id: SESSION-20260318-MOCK-REPLAY
+date: 2026-03-18
+summary: Added and verified a fixture-based mock research replay so the plan-review workflow can be tested with small steps before using live project state.
+completed:
+  - Added tests/test_mock_research_flow.py
+  - Added mock fixture state and memory files under tests/fixtures/mock_research/
+  - Documented the replay command in docs/testing-the-research-system.md
+  - Verified the unittest passes locally
+decisions:
+  - 2026-03-18: Add a mock research replay test for the planning workflow
+artifacts:
+  - tests/test_mock_research_flow.py
+  - tests/fixtures/mock_research/state/plans.yaml
+  - tests/fixtures/mock_research/state/plan_reviews.yaml
+  - docs/testing-the-research-system.md
+next_actions:
+  - Run the mock replay from Claude Code
+  - Review PLAN-BOOTSTRAP-001 from at least one additional reviewer perspective
+  - Move from dry-run into the real onboarding plan once the replay feels stable

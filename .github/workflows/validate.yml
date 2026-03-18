@@ -43,6 +43,9 @@ jobs:
 
       - name: Validate agent state
         run: uv run python scripts/validate_state.py
+
+      - name: Lint Agent Docs
+        run: uv run python scripts/lint_agent_docs.py
       
       - name: Check literature citations
         run: uv run python scripts/lit_index.py --check

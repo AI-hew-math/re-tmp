@@ -1,0 +1,22 @@
+session_id: SESSION-20260318-AGENT-DOCS
+date: 2026-03-18
+summary: Enforced short, modular agent instructions by adding a root-doc lint, modular rule docs, CI integration, and durable state updates for the completed agent-doc task.
+completed:
+  - Shortened AGENTS.md into an index-style root doc
+  - Added CLAUDE.md for execution-oriented repository instructions
+  - Added docs/agent-rules/ modules, including explicit Git workflow guidance
+  - Added scripts/lint_agent_docs.py and wired it into .github/workflows/validate.yml
+  - Recorded the work in memory and state ledgers
+decisions:
+  - 2026-03-18: Enforce agent docs with linted modular rules
+artifacts:
+  - AGENTS.md
+  - CLAUDE.md
+  - scripts/lint_agent_docs.py
+  - .github/workflows/validate.yml
+  - state/tasks.yaml
+  - state/verdicts.yaml
+next_actions:
+  - Create configs/site.yaml
+  - Record the first concrete research objective
+  - Start the first real task through runs/

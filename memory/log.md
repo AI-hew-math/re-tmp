@@ -1,4 +1,4 @@
-﻿# Session Log
+# Session Log
 
 > Agent: Append to this after significant work. Don't read routinely - reference only.
 
@@ -59,9 +59,23 @@
 
 ### Done
 - Added task stage metadata and richer verdict decision vocabulary
-- Added uns/ and scripts/run_task.py for per-task artifact scaffolding
+- Added `runs/` and `scripts/run_task.py` for per-task artifact scaffolding
 - Documented the smaller run-based execution model as the safer alternative to a giant autonomous pipeline
 
 ### Notes
 - A sample run scaffold was created for TASK-BOOTSTRAP to validate the workflow
 
+
+## 2026-03-18 (Agent Doc Enforcement)
+
+### Done
+- Replaced the long root `AGENTS.md` with a shorter index-style version
+- Added `CLAUDE.md`, modular rule docs, and an agent doc template
+- Added `scripts/lint_agent_docs.py` and wired it into CI
+- Recorded the completed rule-enforcement work in `state/tasks.yaml` and `state/verdicts.yaml`
+
+### Decisions
+- Enforced short, modular, linted agent docs as a repository policy (also added to `DECISIONS.md`)
+
+### Notes
+- The next operational milestone is still project onboarding via `configs/site.yaml` and the first real research task

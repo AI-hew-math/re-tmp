@@ -1,4 +1,4 @@
-﻿# Decisions
+# Decisions
 
 > Agent: Read this every session. Append new decisions immediately when made.
 > Never delete entries - this is the canonical record of project decisions.
@@ -24,19 +24,6 @@
 
 **Implications**: Future agents should update both `memory/` and `state/` after significant work, and CI should fail if the state skeleton is missing.
 
-
-## Infrastructure
-<!-- Cluster, data location, paths -->
-
-
-<!--
-## Template for new decisions:
-
-### YYYY-MM-DD: [Brief title]
-**Decision**: What was decided
-**Reason**: Why this over alternatives
-**Alternatives rejected**: What else was considered
--->
 
 ### 2026-03-17: Use Codex as orchestrator and Claude as executor
 
@@ -70,9 +57,9 @@
 
 ### 2026-03-18: Add per-task run artifacts instead of a monolithic pipeline
 
-**Context**: Large autonomous research pipelines are useful references, but this project needs smaller, inspectable loops that fit the 	asks/claims/verdicts model.
+**Context**: Large autonomous research pipelines are useful references, but this project needs smaller, inspectable loops that fit the tasks/claims/verdicts model.
 
-**Decision**: Add a lightweight uns/ directory and scripts/run_task.py so each meaningful task can get its own artifact folder, plan, logs, and review notes.
+**Decision**: Add a lightweight `runs/` directory and `scripts/run_task.py` so each meaningful task can get its own artifact folder, plan, logs, and review notes.
 
 **Reasoning**: This keeps the system inspectable, preserves evidence between agents, and imports the best part of pipeline-based systems without forcing a huge single-shot orchestrator.
 
@@ -80,5 +67,33 @@
 - Option A: Keep everything in chat and state files only. This makes execution evidence harder to inspect.
 - Option B: Build a full AutoResearchClaw-style monolithic runner immediately. Too much complexity for the current phase.
 
-**Implications**: Future execution-heavy tasks should be scaffolded into uns/, and verdict decisions should use proceed/refine/pivot/reject/keep_open.
+**Implications**: Future execution-heavy tasks should be scaffolded into `runs/`, and verdict decisions should use `proceed`, `refine`, `pivot`, `reject`, or `keep_open`.
 
+
+### 2026-03-18: Enforce agent docs with linted modular rules
+
+**Context**: The project depends on reusable instructions for Codex and Claude, but root agent docs are only guidance unless the repository enforces quality, modularity, and checkable commands.
+
+**Decision**: Keep `AGENTS.md` and `CLAUDE.md` short, move detail into `docs/agent-rules/`, and enforce those docs with `scripts/lint_agent_docs.py` in both local checks and CI.
+
+**Reasoning**: This turns instruction quality into a tracked, testable part of the system and makes future rule updates easy to review through Git diffs.
+
+**Alternatives Rejected**:
+- Option A: Keep long monolithic root docs. Too noisy and easy for agents to ignore.
+- Option B: Rely on chat prompts alone. Not durable across sessions or agents.
+
+**Implications**: Future agent mistakes should be fixed by updating tracked rule docs or templates, then re-running the lint and review gates.
+
+
+## Infrastructure
+<!-- Cluster, data location, paths -->
+
+
+<!--
+## Template for new decisions:
+
+### YYYY-MM-DD: [Brief title]
+**Decision**: What was decided
+**Reason**: Why this over alternatives
+**Alternatives rejected**: What else was considered
+-->

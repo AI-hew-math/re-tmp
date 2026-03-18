@@ -1,4 +1,20 @@
-﻿verdicts:
+verdicts:
+  - id: VERDICT-AGENT-DOCS-001
+    reviewed_item: TASK-AGENT-DOCS
+    decision: proceed
+    status: closed
+    rationale: Root agent docs are now short, modular, linted, and enforced in CI, which closes the main gap in instruction quality control.
+    evidence:
+      - AGENTS.md
+      - CLAUDE.md
+      - docs/agent-rules/core-rules.md
+      - docs/agent-rules/git-rules.md
+      - scripts/lint_agent_docs.py
+      - .github/workflows/validate.yml
+    updated_at: 2026-03-18
+    reviewer: codex
+    follow_up:
+      - TASK-BOOTSTRAP
   - id: VERDICT-BOOTSTRAP-001
     reviewed_item: TASK-BOOTSTRAP
     decision: keep_open

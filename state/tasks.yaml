@@ -1,4 +1,27 @@
-﻿tasks:
+tasks:
+  - id: TASK-AGENT-DOCS
+    title: Enforce root agent docs with linted modular rules
+    stage: review
+    kind: review
+    status: done
+    owner: codex
+    reviewer: human
+    updated_at: 2026-03-18
+    why: Research automation depends on short, reusable, and checkable agent instructions instead of long ad-hoc prompts.
+    success: Root agent docs are modularized, linted, and checked in CI with explicit validation commands and Git-backed rule updates.
+    next_action: Keep refining rules when future agent mistakes appear, but treat the root doc enforcement baseline as complete.
+    blockers: []
+    validation:
+      - python scripts/lint_agent_docs.py
+      - python scripts/validate_state.py
+      - python scripts/check_task_quality.py
+      - python scripts/review_gate.py
+    links:
+      - AGENTS.md
+      - CLAUDE.md
+      - scripts/lint_agent_docs.py
+      - templates/AGENT_DOC_TEMPLATE.md
+      - .github/workflows/validate.yml
   - id: TASK-BOOTSTRAP
     title: Complete project onboarding and local site configuration
     stage: scoping

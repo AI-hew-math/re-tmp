@@ -79,3 +79,19 @@
 
 ### Notes
 - The next operational milestone is still project onboarding via `configs/site.yaml` and the first real research task
+
+
+## 2026-03-18 (Review Hardening)
+
+### Done
+- Reviewed the automation scripts and state layer for real failure modes instead of only happy-path checks
+- Hardened `scripts/state_utils.py` to fail on malformed state structure
+- Extended `scripts/validate_state.py` to validate session capsule files
+- Prevented `scripts/run_task.py` from scaffolding runs for completed tasks
+- Expanded CI to cover task quality, review gate, and orchestrator smoke tests
+
+### Decisions
+- Kept the parser dependency-free but strict, and widened CI coverage for the automation layer
+
+### Notes
+- The next best test is still a real research task with `configs/site.yaml` in place

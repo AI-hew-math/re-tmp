@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 
 from state_utils import as_bool, as_list, load_state_items, StateParseError
 
@@ -7,6 +7,7 @@ VALID_TASK_KINDS = {"research", "implementation", "experiment", "debug", "valida
 VALID_TASK_STATUS = {"pending", "ready", "in_progress", "blocked", "done"}
 VALID_OWNERS = {"codex", "claude", "human", "shared", "unassigned"}
 VALID_CLAIM_STATUS = {"provisional", "supported", "rejected", "needs_review"}
+VALID_VERDICT_STATUS = {"active", "closed"}
 VALID_STAGES = {
     "scoping",
     "literature",
@@ -88,8 +89,17 @@ def main() -> int:
     for verdict in verdicts:
         verdict_id = str(verdict.get("id", "UNKNOWN"))
         decision = str(verdict.get("decision", ""))
+        status = str(verdict.get("status", ""))
+        reviewer = str(verdict.get("reviewer", ""))
+        evidence = as_list(verdict.get("evidence", []))
         if decision not in VALID_VERDICT_DECISIONS:
             errors.append(f"{verdict_id}: invalid verdict decision '{decision}'")
+        if status not in VALID_VERDICT_STATUS:
+            errors.append(f"{verdict_id}: invalid verdict status '{status}'")
+        if reviewer not in VALID_OWNERS - {"unassigned"}:
+            errors.append(f"{verdict_id}: invalid reviewer '{reviewer}'")
+        if not evidence:
+            errors.append(f"{verdict_id}: verdicts must include at least one evidence path")
 
     for warning in warnings:
         print(f"[WARN] {warning}")

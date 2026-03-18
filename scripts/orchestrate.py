@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass
 import sys
@@ -37,7 +37,6 @@ class Claim:
     notes: str
 
 
-
 def load_tasks() -> list[Task]:
     raw_tasks = load_state_items("tasks.yaml", "tasks")
     return [
@@ -61,7 +60,6 @@ def load_tasks() -> list[Task]:
     ]
 
 
-
 def load_claims() -> list[Claim]:
     raw_claims = load_state_items("claims.yaml", "claims")
     return [
@@ -78,7 +76,6 @@ def load_claims() -> list[Claim]:
         )
         for item in raw_claims
     ]
-
 
 
 def score_task(task: Task) -> tuple[int, int, int]:
@@ -100,12 +97,10 @@ def score_task(task: Task) -> tuple[int, int, int]:
     return (status_rank, owner_rank, risk_rank)
 
 
-
 def recommend_owner(task: Task) -> str:
     if task.kind in {"implementation", "experiment", "debug", "validation"}:
         return "claude"
     return "codex"
-
 
 
 def summarize_claim_context(claims: list[Claim]) -> str:
@@ -119,7 +114,6 @@ def summarize_claim_context(claims: list[Claim]) -> str:
     return f"Latest claim: {claim.id} [{claim.status}, confidence={claim.confidence}] - {claim.claim}"
 
 
-
 def main() -> int:
     try:
         tasks = load_tasks()
@@ -128,11 +122,15 @@ def main() -> int:
         print(f"[FAIL] {exc}")
         return 1
 
-    if not tasks:
-        print("No tasks available in state/tasks.yaml")
+    open_tasks = [task for task in tasks if task.status != "done"]
+    if not open_tasks:
+        print("# Research Orchestrator Summary")
+        print()
+        print("No open tasks remain in state/tasks.yaml.")
+        print(summarize_claim_context(claims))
         return 0
 
-    ordered = sorted(tasks, key=score_task)
+    ordered = sorted(open_tasks, key=score_task)
     next_task = ordered[0]
     suggested_owner = recommend_owner(next_task)
 

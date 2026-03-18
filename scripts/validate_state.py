@@ -1,7 +1,6 @@
-﻿from pathlib import Path
 import sys
 
-from state_utils import ROOT, StateParseError, load_state_items
+from state_utils import ROOT, StateParseError, load_state_items, parse_flat_mapping
 
 
 TASKS_PATH = ROOT / "state" / "tasks.yaml"
@@ -11,13 +10,48 @@ CAPSULES_DIR = ROOT / "state" / "session_capsules"
 
 
 TASK_REQUIRED = {
-    "id", "title", "stage", "kind", "status", "owner", "reviewer", "updated_at", "why", "success", "next_action"
+    "id",
+    "title",
+    "stage",
+    "kind",
+    "status",
+    "owner",
+    "reviewer",
+    "updated_at",
+    "why",
+    "success",
+    "next_action",
 }
 CLAIM_REQUIRED = {
-    "id", "claim", "status", "evidence", "updated_at", "confidence", "review_required", "reviewer", "notes"
+    "id",
+    "claim",
+    "status",
+    "evidence",
+    "updated_at",
+    "confidence",
+    "review_required",
+    "reviewer",
+    "notes",
 }
 VERDICT_REQUIRED = {
-    "id", "reviewed_item", "decision", "status", "rationale", "evidence", "updated_at", "reviewer", "follow_up"
+    "id",
+    "reviewed_item",
+    "decision",
+    "status",
+    "rationale",
+    "evidence",
+    "updated_at",
+    "reviewer",
+    "follow_up",
+}
+CAPSULE_REQUIRED = {
+    "session_id",
+    "date",
+    "summary",
+    "completed",
+    "decisions",
+    "artifacts",
+    "next_actions",
 }
 
 
@@ -37,6 +71,19 @@ def validate_capsules_dir() -> list[str]:
     return ["state/session_capsules/ must exist"]
 
 
+def validate_capsules() -> list[str]:
+    errors: list[str] = []
+    for path in sorted(CAPSULES_DIR.glob("*.yaml")):
+        data = parse_flat_mapping(path)
+        missing = sorted(CAPSULE_REQUIRED - set(data))
+        if missing:
+            errors.append(f"{path.relative_to(ROOT)} missing keys: {', '.join(missing)}")
+        for field in ("completed", "decisions", "artifacts", "next_actions"):
+            if not isinstance(data.get(field, []), list):
+                errors.append(f"{path.relative_to(ROOT)} field '{field}' must be a list")
+    return errors
+
+
 def main() -> int:
     errors: list[str] = []
     for path in (TASKS_PATH, CLAIMS_PATH, VERDICTS_PATH):
@@ -49,6 +96,7 @@ def main() -> int:
             errors.extend(validate_items("tasks.yaml", "tasks", TASK_REQUIRED))
             errors.extend(validate_items("claims.yaml", "claims", CLAIM_REQUIRED))
             errors.extend(validate_items("verdicts.yaml", "verdicts", VERDICT_REQUIRED))
+            errors.extend(validate_capsules())
         except StateParseError as exc:
             errors.append(str(exc))
 

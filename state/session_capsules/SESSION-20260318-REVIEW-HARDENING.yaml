@@ -1,0 +1,23 @@
+session_id: SESSION-20260318-REVIEW-HARDENING
+date: 2026-03-18
+summary: Reviewed the implemented research automation files, fixed silent parsing failures, blocked completed-task reruns, and expanded CI to exercise more of the automation layer.
+completed:
+  - Hardened scripts/state_utils.py to reject malformed structures
+  - Validated session capsule files in scripts/validate_state.py
+  - Added verdict status and evidence checks in scripts/check_task_quality.py
+  - Filtered completed tasks from scripts/orchestrate.py
+  - Blocked scripts/run_task.py from creating runs for completed tasks
+  - Extended .github/workflows/validate.yml with task quality, review gate, and orchestrator smoke tests
+decisions:
+  - 2026-03-18: Make state parsing strict and extend CI over automation scripts
+artifacts:
+  - scripts/state_utils.py
+  - scripts/validate_state.py
+  - scripts/check_task_quality.py
+  - scripts/orchestrate.py
+  - scripts/run_task.py
+  - .github/workflows/validate.yml
+next_actions:
+  - Create configs/site.yaml
+  - Define the first concrete research task
+  - Run the first real task through runs/ with the stricter gates enabled

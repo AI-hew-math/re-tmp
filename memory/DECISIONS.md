@@ -85,6 +85,21 @@
 **Implications**: Future agent mistakes should be fixed by updating tracked rule docs or templates, then re-running the lint and review gates.
 
 
+### 2026-03-18: Make state parsing strict and extend CI over automation scripts
+
+**Context**: The review pass found that malformed state files could be partially ignored, completed tasks could still get new run scaffolds, and CI was not exercising enough of the automation layer.
+
+**Decision**: Keep the lightweight custom parser, but make it fail on unsupported structure, validate session capsules explicitly, block new runs for completed tasks, and extend CI to check task quality, review gates, and orchestrator smoke tests.
+
+**Reasoning**: This keeps the repository self-contained for `python scripts/...` usage while removing silent failure modes from the state and orchestration layer.
+
+**Alternatives Rejected**:
+- Option A: Depend on PyYAML in every environment. Too fragile for the current plain-`python` workflow.
+- Option B: Leave the permissive parser in place. Too easy for malformed state to pass unnoticed.
+
+**Implications**: Future state schema changes should either fit the supported subset cleanly or come with matching parser and validation updates.
+
+
 ## Infrastructure
 <!-- Cluster, data location, paths -->
 

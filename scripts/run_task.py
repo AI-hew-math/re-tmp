@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from datetime import datetime, timezone
 from pathlib import Path
@@ -12,10 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNS_DIR = ROOT / "runs"
 
 
-
 def utc_stamp() -> str:
     return datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
-
 
 
 def load_task(task_id: str) -> dict[str, object]:
@@ -24,7 +22,6 @@ def load_task(task_id: str) -> dict[str, object]:
         if str(task.get("id", "")) == task_id:
             return task
     raise StateParseError(f"Task not found: {task_id}")
-
 
 
 def create_run(task: dict[str, object]) -> Path:
@@ -84,7 +81,6 @@ def create_run(task: dict[str, object]) -> Path:
     return run_dir
 
 
-
 def main() -> int:
     if len(sys.argv) < 2:
         print("Usage: python scripts/run_task.py TASK-XXXX")
@@ -95,6 +91,10 @@ def main() -> int:
         task = load_task(task_id)
     except StateParseError as exc:
         print(f"[FAIL] {exc}")
+        return 1
+
+    if str(task.get("status", "")) == "done":
+        print(f"[FAIL] Refusing to create a new run for completed task: {task_id}")
         return 1
 
     run_dir = create_run(task)

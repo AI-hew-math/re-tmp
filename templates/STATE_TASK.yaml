@@ -1,5 +1,6 @@
-﻿id: TASK-XXXX
+id: TASK-XXXX
 title: Short task title
+plan_id: PLAN-XXXX
 stage: scoping
 kind: research
 status: pending

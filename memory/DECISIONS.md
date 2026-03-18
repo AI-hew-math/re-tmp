@@ -100,6 +100,21 @@
 **Implications**: Future state schema changes should either fit the supported subset cleanly or come with matching parser and validation updates.
 
 
+### 2026-03-18: Require multi-review plan approval before execution task generation
+
+**Context**: The previous task-based workflow had role separation, but it did not yet enforce the Claude-style sequence of plan review, approval, and then execution.
+
+**Decision**: Add first-class `state/plans.yaml` and `state/plan_reviews.yaml`, plus a `plan_gate.py` check and `create_execution_tasks.py` generator so execution work is created only from approved plans.
+
+**Reasoning**: This makes planning reviewable as its own artifact, supports multiple reviewers, and blocks execution work from outrunning the approved research direction.
+
+**Alternatives Rejected**:
+- Option A: Keep plan review implicit in chat or task descriptions. Too weak and hard to audit.
+- Option B: Jump straight to a full autonomous multi-agent planner. Too heavy before the basic review contract is proven.
+
+**Implications**: Future experiment or implementation tasks should be linked to `plan_id`, and reviewers should work through `state/plan_reviews.yaml` before execution begins.
+
+
 ## Infrastructure
 <!-- Cluster, data location, paths -->
 

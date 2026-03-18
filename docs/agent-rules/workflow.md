@@ -4,11 +4,14 @@ This repository uses a small-loop research workflow.
 
 ## Standard Loop
 
-1. Codex reads state and chooses the next task.
-2. Codex creates a run scaffold if execution artifacts are needed.
-3. Claude executes the task and records evidence.
-4. Codex reviews the evidence and writes a verdict.
-5. State is updated and the next task is chosen.
+1. Codex reads plans, plan reviews, and tasks.
+2. Codex drafts or refines a plan.
+3. Reviewers record plan reviews.
+4. Approved plans generate execution tasks.
+5. Codex creates a run scaffold if execution artifacts are needed.
+6. Claude executes the task and records evidence.
+7. Codex reviews the evidence and writes a verdict.
+8. State is updated and the next task is chosen.
 
 ## Run-Based Execution
 

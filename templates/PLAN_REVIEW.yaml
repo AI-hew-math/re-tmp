@@ -1,0 +1,9 @@
+id: PREVIEW-XXXX
+plan_id: PLAN-XXXX
+reviewer: claude
+role: feasibility
+decision: approve
+rationale: Why this review decision was made
+evidence:
+  - templates/PLAN_MODE.md
+updated_at: YYYY-MM-DD

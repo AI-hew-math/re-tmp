@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import sys
 
+from plan_utils import evaluate_plan, load_plans, load_plan_reviews
 from state_utils import as_bool, as_list, load_state_items, StateParseError
 
 
@@ -10,6 +11,7 @@ from state_utils import as_bool, as_list, load_state_items, StateParseError
 class Task:
     id: str
     title: str
+    plan_id: str
     stage: str
     kind: str
     status: str
@@ -43,6 +45,7 @@ def load_tasks() -> list[Task]:
         Task(
             id=str(item.get("id", "")),
             title=str(item.get("title", "")),
+            plan_id=str(item.get("plan_id", "")),
             stage=str(item.get("stage", "")),
             kind=str(item.get("kind", "")),
             status=str(item.get("status", "")),
@@ -114,10 +117,66 @@ def summarize_claim_context(claims: list[Claim]) -> str:
     return f"Latest claim: {claim.id} [{claim.status}, confidence={claim.confidence}] - {claim.claim}"
 
 
+def print_plan_priority() -> bool:
+    plans = load_plans()
+    reviews = load_plan_reviews()
+    if not plans:
+        return False
+
+    evaluations = {plan.id: evaluate_plan(plan, reviews) for plan in plans}
+    approved_without_tasks = [
+        plan for plan in plans if evaluations[plan.id].outcome == "approved" and not plan.generated_tasks
+    ]
+    if approved_without_tasks:
+        plan = approved_without_tasks[0]
+        evaluation = evaluations[plan.id]
+        print("# Research Orchestrator Summary")
+        print()
+        print(f"Next plan action: {plan.id} - {plan.title}")
+        print(f"Stored status: {plan.status}")
+        print(f"Review outcome: {evaluation.outcome}")
+        print(f"Approvals: {evaluation.approvals}/{evaluation.required_approvals}")
+        print("Next action")
+        print(f"- Generate execution work with: python scripts/create_execution_tasks.py {plan.id}")
+        print("Why this matters")
+        print(f"- {plan.why}")
+        print("Success condition")
+        print(f"- {plan.success}")
+        return True
+
+    review_queue = [plan for plan in plans if evaluations[plan.id].outcome in {"draft", "in_review", "changes_requested"}]
+    if review_queue:
+        plan = review_queue[0]
+        evaluation = evaluations[plan.id]
+        print("# Research Orchestrator Summary")
+        print()
+        print(f"Next plan action: {plan.id} - {plan.title}")
+        print(f"Stored status: {plan.status}")
+        print(f"Review outcome: {evaluation.outcome}")
+        print(f"Approvals: {evaluation.approvals}/{evaluation.required_approvals}")
+        print(f"Change requests: {evaluation.changes_requested}")
+        print(f"Rejections: {evaluation.rejections}/{evaluation.blocking_rejections}")
+        print("Next action")
+        print(f"- {plan.next_action}")
+        print("Plan gate")
+        print(f"- Review current state with: python scripts/plan_gate.py {plan.id}")
+        print("Why this matters")
+        print(f"- {plan.why}")
+        print("Success condition")
+        print(f"- {plan.success}")
+        return True
+
+    return False
+
+
 def main() -> int:
     try:
         tasks = load_tasks()
         claims = load_claims()
+        if print_plan_priority():
+            print()
+            print(summarize_claim_context(claims))
+            return 0
     except StateParseError as exc:
         print(f"[FAIL] {exc}")
         return 1
@@ -137,6 +196,8 @@ def main() -> int:
     print("# Research Orchestrator Summary")
     print()
     print(f"Next task: {next_task.id} - {next_task.title}")
+    if next_task.plan_id:
+        print(f"Plan: {next_task.plan_id}")
     print(f"Stage: {next_task.stage}")
     print(f"Kind: {next_task.kind}")
     print(f"Current status: {next_task.status}")

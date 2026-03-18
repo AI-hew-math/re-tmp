@@ -1,0 +1,29 @@
+plans:
+  - id: PLAN-BOOTSTRAP-001
+    title: Approve onboarding context before the first real research task
+    status: draft
+    planner: codex
+    updated_at: 2026-03-18
+    research_question: What cluster, data location, and initial research objective should this repository use?
+    hypothesis: A reviewed onboarding plan will prevent early execution drift and make later experiment plans more reliable.
+    why: The repository needs project-specific context before execution tasks can safely branch into implementation or experiments.
+    success: configs/site.yaml exists and the first concrete research objective is recorded in durable state.
+    next_action: Draft the onboarding plan details and collect at least two reviews before execution work is generated from the plan.
+    required_approvals: 2
+    blocking_rejections: 1
+    execution_owner: codex
+    execution_reviewer: human
+    task_stage: scoping
+    task_kind: research
+    task_title: Complete project onboarding and local site configuration
+    task_why: We need a concrete project question, cluster choice, and data location before safe automated research can start.
+    task_success: Onboarding is complete and the first research question is written down in durable project state.
+    task_next_action: Create configs/site.yaml with scripts/setup.py and confirm cluster, dataset, and initial research objective.
+    task_validation:
+      - Confirm configs/site.yaml exists
+      - Confirm research question is recorded in memory/DECISIONS.md or a new task
+    links:
+      - ONBOARDING.md
+      - templates/PLAN_MODE.md
+      - docs/research-automation-architecture.md
+    generated_tasks: []

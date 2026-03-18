@@ -12,11 +12,13 @@ The goal is to help Codex and Claude run small, inspectable research loops with 
 - `Codex` is the orchestrator, planner, reviewer, and state owner.
 - `Claude` is the bounded executor for implementation, validation, and debugging tasks.
 - `memory/`, `state/`, and `runs/` are the source of truth, not the chat thread.
+- `state/plans.yaml` and `state/plan_reviews.yaml` decide whether execution work may begin.
 
 ## Hard Rules
 
-- Read `memory/NOW.md`, `memory/DECISIONS.md`, and `state/tasks.yaml` first.
+- Read `memory/NOW.md`, `memory/DECISIONS.md`, `state/plans.yaml`, `state/plan_reviews.yaml`, and `state/tasks.yaml` first.
 - Do not perform meaningful work without a task in `state/tasks.yaml`.
+- Do not create execution work until the linked plan is approved.
 - Do not mark execution-heavy work done without validation evidence.
 - Do not finalize claims without evidence and a verdict.
 - Treat this file as an index. Keep root agent docs short and move detail into `docs/agent-rules/`.
@@ -27,6 +29,7 @@ Run these before advancing meaningful work:
 
 ```bash
 python scripts/orchestrate.py
+python scripts/plan_gate.py
 python scripts/validate_state.py
 python scripts/check_task_quality.py
 python scripts/review_gate.py
@@ -38,6 +41,8 @@ For execution-heavy tasks, create a run scaffold:
 ```bash
 python scripts/run_task.py TASK-XXXX
 ```
+
+Execution-heavy tasks should come from an approved plan.
 
 ## Domain Terms
 

@@ -26,12 +26,14 @@ Your job is to complete bounded tasks, leave inspectable artifacts, and return e
 Before handing work back:
 
 ```bash
+python scripts/plan_gate.py
 python scripts/validate_state.py
 python scripts/check_task_quality.py
 python scripts/review_gate.py
 ```
 
 If code changed, also run the task-specific validation listed in `state/tasks.yaml`.
+Do not start execution-heavy work until its linked `plan_id` is approved.
 
 ## Domain Terms
 

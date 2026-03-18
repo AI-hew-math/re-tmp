@@ -1,0 +1,25 @@
+id: PLAN-XXXX
+title: Short plan title
+status: draft
+planner: codex
+updated_at: YYYY-MM-DD
+research_question: What are we trying to learn?
+hypothesis: Specific testable prediction or planning premise
+why: Why this plan matters for the research direction
+success: What concrete outcome means this plan succeeded
+next_action: One concrete next step for planning or review
+required_approvals: 2
+blocking_rejections: 1
+execution_owner: claude
+execution_reviewer: codex
+task_stage: execution
+task_kind: implementation
+task_title: Execution task title created after plan approval
+task_why: Why the generated execution task matters
+task_success: What makes the generated task successful
+task_next_action: First concrete action once execution starts
+task_validation:
+  - One required validation command or check
+links:
+  - templates/PLAN_MODE.md
+generated_tasks: []

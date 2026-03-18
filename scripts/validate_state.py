@@ -6,6 +6,8 @@ from state_utils import ROOT, StateParseError, load_state_items, parse_flat_mapp
 TASKS_PATH = ROOT / "state" / "tasks.yaml"
 CLAIMS_PATH = ROOT / "state" / "claims.yaml"
 VERDICTS_PATH = ROOT / "state" / "verdicts.yaml"
+PLANS_PATH = ROOT / "state" / "plans.yaml"
+PLAN_REVIEWS_PATH = ROOT / "state" / "plan_reviews.yaml"
 CAPSULES_DIR = ROOT / "state" / "session_capsules"
 
 
@@ -43,6 +45,41 @@ VERDICT_REQUIRED = {
     "updated_at",
     "reviewer",
     "follow_up",
+}
+PLAN_REQUIRED = {
+    "id",
+    "title",
+    "status",
+    "planner",
+    "updated_at",
+    "research_question",
+    "hypothesis",
+    "why",
+    "success",
+    "next_action",
+    "required_approvals",
+    "blocking_rejections",
+    "execution_owner",
+    "execution_reviewer",
+    "task_stage",
+    "task_kind",
+    "task_title",
+    "task_why",
+    "task_success",
+    "task_next_action",
+    "task_validation",
+    "links",
+    "generated_tasks",
+}
+PLAN_REVIEW_REQUIRED = {
+    "id",
+    "plan_id",
+    "reviewer",
+    "role",
+    "decision",
+    "rationale",
+    "evidence",
+    "updated_at",
 }
 CAPSULE_REQUIRED = {
     "session_id",
@@ -86,7 +123,7 @@ def validate_capsules() -> list[str]:
 
 def main() -> int:
     errors: list[str] = []
-    for path in (TASKS_PATH, CLAIMS_PATH, VERDICTS_PATH):
+    for path in (TASKS_PATH, CLAIMS_PATH, VERDICTS_PATH, PLANS_PATH, PLAN_REVIEWS_PATH):
         if not path.exists():
             errors.append(f"Missing required state file: {path.relative_to(ROOT)}")
     errors.extend(validate_capsules_dir())
@@ -96,6 +133,8 @@ def main() -> int:
             errors.extend(validate_items("tasks.yaml", "tasks", TASK_REQUIRED))
             errors.extend(validate_items("claims.yaml", "claims", CLAIM_REQUIRED))
             errors.extend(validate_items("verdicts.yaml", "verdicts", VERDICT_REQUIRED))
+            errors.extend(validate_items("plans.yaml", "plans", PLAN_REQUIRED))
+            errors.extend(validate_items("plan_reviews.yaml", "plan_reviews", PLAN_REVIEW_REQUIRED))
             errors.extend(validate_capsules())
         except StateParseError as exc:
             errors.append(str(exc))

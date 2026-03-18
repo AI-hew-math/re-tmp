@@ -10,6 +10,8 @@ The repository is durable memory.
 Durable memory is split into:
 - `memory/`: short human-readable handoff
 - `state/`: machine-readable ledgers for tasks, claims, verdicts, and session packets
+- `state/plans.yaml`: planner-owned durable plans
+- `state/plan_reviews.yaml`: multi-review packets for plans
 - `experiments/`: experiment design and result record
 - `literature/`: external evidence and paper notes
 - `runs/`: per-task execution artifacts, logs, and review notes
@@ -64,9 +66,59 @@ Required fields per task:
 - `next_action`
 
 Recommended fields:
+- `plan_id`
 - `blockers`
 - `validation`
 - `links`
+
+Execution-heavy tasks should reference an approved `plan_id`.
+
+### `state/plans.yaml`
+Tracks durable plans before execution work exists.
+
+Required fields per plan:
+- `id`
+- `title`
+- `status`
+- `planner`
+- `updated_at`
+- `research_question`
+- `hypothesis`
+- `why`
+- `success`
+- `next_action`
+- `required_approvals`
+- `blocking_rejections`
+- `execution_owner`
+- `execution_reviewer`
+- `task_stage`
+- `task_kind`
+- `task_title`
+- `task_why`
+- `task_success`
+- `task_next_action`
+- `task_validation`
+- `links`
+- `generated_tasks`
+
+Recommended plan statuses:
+- `draft`
+- `in_review`
+- `changes_requested`
+- `approved`
+- `rejected`
+- `executing`
+- `completed`
+
+### `state/plan_reviews.yaml`
+Tracks independent reviews of a plan.
+
+Each review should answer:
+- which plan was reviewed
+- who reviewed it
+- what role they reviewed from
+- whether they approve, reject, or request changes
+- what evidence informed the review
 
 Recommended task stages:
 - `scoping`
@@ -121,19 +173,21 @@ A run directory should contain:
 
 ## Workflow Loop
 
-1. Codex reads `memory/` and `state/`.
-2. Codex selects the highest-value ready task.
-3. Codex creates a run scaffold when the task needs executable artifacts.
-4. Codex assigns execution to Claude when code or validation work is needed.
-5. Claude performs the task and records outputs in the run directory.
-6. Codex reviews the packet and evidence.
-7. Codex updates claims, verdicts, and next tasks.
-8. Gate scripts are run before advancing important items.
-9. The loop repeats.
+1. Codex reads `memory/`, `plans`, `plan_reviews`, and `tasks`.
+2. Codex drafts or refines a plan.
+3. Multiple reviewers add plan reviews.
+4. `python scripts/plan_gate.py PLAN-XXXX --require-approved` decides whether execution is allowed.
+5. Codex generates execution work from the approved plan.
+6. Codex creates a run scaffold when the task needs executable artifacts.
+7. Claude performs the task and records outputs in the run directory.
+8. Codex reviews the packet and evidence.
+9. Codex updates claims, verdicts, tasks, and plans.
+10. The loop repeats.
 
 ## Safety Rules
 
 - No work without a task.
+- No execution without an approved plan.
 - No direction change without `why` and `success`.
 - No implementation completion without validation.
 - No finalized claim without evidence and verdict.
@@ -141,10 +195,12 @@ A run directory should contain:
 
 See also:
 - `docs/fast-approval-gates.md`
+- `docs/plan-review-workflow.md`
 - `docs/run-based-task-execution.md`
 - `docs/testing-the-research-system.md`
 
 ## Immediate Next Step
 
 Use `python scripts/orchestrate.py` to inspect the current state and generate the next recommended research action.
-Then create a run with `python scripts/run_task.py TASK-XXXX` when the task needs execution artifacts.
+Then review the current plan with `python scripts/plan_gate.py PLAN-XXXX`.
+Only create execution work after approval, and then create a run with `python scripts/run_task.py TASK-XXXX`.

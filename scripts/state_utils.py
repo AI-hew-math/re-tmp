@@ -124,6 +124,37 @@ def load_state_items(filename: str, section_name: str) -> list[dict[str, object]
     return parse_top_level_items(STATE_DIR / filename, section_name)
 
 
+def _format_scalar(value: object) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    return str(value)
+
+
+def write_top_level_items(path: Path, section_name: str, items: list[dict[str, object]]) -> None:
+    lines = [f"{section_name}:"]
+    for item in items:
+        if not item:
+            continue
+        first = True
+        for key, value in item.items():
+            if isinstance(value, list):
+                if first:
+                    lines.append(f"  - {key}:")
+                    first = False
+                else:
+                    lines.append(f"    {key}:")
+                for entry in value:
+                    lines.append(f"      - {_format_scalar(entry)}")
+                if not value:
+                    lines[-1] = f"{lines[-1]} []"
+                continue
+
+            prefix = "  - " if first else "    "
+            lines.append(f"{prefix}{key}: {_format_scalar(value)}")
+            first = False
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def as_list(value: object) -> list[str]:
     if isinstance(value, list):
         return [str(item) for item in value]
@@ -136,3 +167,10 @@ def as_bool(value: object) -> bool:
     if isinstance(value, str):
         return value.lower() == "true"
     return False
+
+
+def as_int(value: object, default: int = 0) -> int:
+    try:
+        return int(str(value))
+    except (TypeError, ValueError):
+        return default

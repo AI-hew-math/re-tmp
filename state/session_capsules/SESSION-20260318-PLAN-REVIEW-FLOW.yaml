@@ -1,0 +1,21 @@
+session_id: SESSION-20260318-PLAN-REVIEW-FLOW
+date: 2026-03-18
+summary: Added first-class plan and plan-review state, a plan gate, and approved-plan-to-task generation so research execution can be blocked until multiple reviews approve the plan.
+completed:
+  - Added state/plans.yaml and state/plan_reviews.yaml
+  - Added scripts/plan_utils.py, scripts/plan_gate.py, and scripts/create_execution_tasks.py
+  - Updated validation, quality checks, review gate, orchestrator, and run scaffolding to understand plan_id
+  - Updated docs, templates, and working memory for plan-first execution
+decisions:
+  - 2026-03-18: Require multi-review plan approval before execution task generation
+artifacts:
+  - state/plans.yaml
+  - state/plan_reviews.yaml
+  - scripts/plan_gate.py
+  - scripts/create_execution_tasks.py
+  - scripts/plan_utils.py
+  - docs/plan-review-workflow.md
+next_actions:
+  - Fill in PLAN-BOOTSTRAP-001 with project-specific onboarding details
+  - Add plan reviews for PLAN-BOOTSTRAP-001
+  - Run python scripts/plan_gate.py PLAN-BOOTSTRAP-001 --require-approved before generating execution work

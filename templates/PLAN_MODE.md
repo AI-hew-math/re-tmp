@@ -39,5 +39,10 @@
 - [ ] [Measurable criterion 1]
 - [ ] [Measurable criterion 2]
 
+## Durable Plan State
+- Mirror the approved plan into `state/plans.yaml`
+- Collect multi-review decisions in `state/plan_reviews.yaml`
+- Only generate execution tasks after `python scripts/plan_gate.py PLAN-XXXX --require-approved` passes
+
 ---
 **Ready to proceed?** [WAIT FOR USER CONFIRMATION]

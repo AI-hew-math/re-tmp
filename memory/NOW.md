@@ -4,13 +4,15 @@
 
 ## Check First
 - Run `python scripts/orchestrate.py`
+- Run `python scripts/plan_gate.py`
 - Run `python scripts/check_task_quality.py`
 - Run `python scripts/review_gate.py`
 - Create or inspect a task run with `python scripts/run_task.py TASK-XXXX`
 
 ## Current Focus
-- Finish project-specific onboarding and define the first real research task
+- Draft and review the onboarding plan before execution branches into real research tasks
 
 ## Next Actions
-- Create `configs/site.yaml` and record the initial research objective
-- Start the first real task through `state/tasks.yaml` and `runs/`
+- Fill out `PLAN-BOOTSTRAP-001` with project-specific onboarding details
+- Collect plan reviews in `state/plan_reviews.yaml`
+- Only after approval, generate or advance execution work

@@ -95,3 +95,18 @@
 
 ### Notes
 - The next best test is still a real research task with `configs/site.yaml` in place
+
+
+## 2026-03-18 (Plan Review Flow)
+
+### Done
+- Added `state/plans.yaml` and `state/plan_reviews.yaml` as first-class planning state
+- Added `scripts/plan_gate.py` for multi-review plan evaluation
+- Added `scripts/create_execution_tasks.py` so approved plans can generate execution work
+- Updated orchestration, validation, review gates, docs, templates, and memory to use plan-first execution
+
+### Decisions
+- Require multi-review plan approval before execution task generation
+
+### Notes
+- The next live step is to fill out `PLAN-BOOTSTRAP-001`, add reviews, and only then advance onboarding execution

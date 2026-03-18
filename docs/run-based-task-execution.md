@@ -15,6 +15,8 @@ This borrows the best part of large pipeline systems without forcing a giant end
 python scripts/run_task.py TASK-XXXX
 ```
 
+For execution-heavy tasks, the task should already be linked to an approved `plan_id`.
+
 This creates:
 - `runs/<timestamp>-task-xxxx/run.json`
 - `runs/<timestamp>-task-xxxx/plan.md`
@@ -23,10 +25,11 @@ This creates:
 
 ## Recommended Use
 
-1. Codex defines or updates the task in `state/tasks.yaml`.
-2. Codex creates a run folder with `python scripts/run_task.py TASK-XXXX`.
-3. Claude executes the task and writes logs or notes into that run folder.
-4. Codex reviews the evidence and records a verdict in `state/verdicts.yaml`.
+1. Codex drafts and reviews a plan in `state/plans.yaml` and `state/plan_reviews.yaml`.
+2. Codex generates an execution task from the approved plan.
+3. Codex creates a run folder with `python scripts/run_task.py TASK-XXXX`.
+4. Claude executes the task and writes logs or notes into that run folder.
+5. Codex reviews the evidence and records a verdict in `state/verdicts.yaml`.
 
 ## Stage Vocabulary
 

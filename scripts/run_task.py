@@ -5,6 +5,7 @@ from pathlib import Path
 import json
 import sys
 
+from plan_utils import evaluate_plan, load_plans, load_plan_reviews
 from state_utils import as_list, load_state_items, StateParseError
 
 
@@ -31,6 +32,7 @@ def create_run(task: dict[str, object]) -> Path:
     metadata = {
         "run_id": run_id,
         "task_id": str(task.get("id", "")),
+        "plan_id": str(task.get("plan_id", "")),
         "title": str(task.get("title", "")),
         "stage": str(task.get("stage", "")),
         "kind": str(task.get("kind", "")),
@@ -50,6 +52,7 @@ def create_run(task: dict[str, object]) -> Path:
             [
                 f"# {metadata['task_id']} - {metadata['title']}",
                 "",
+                *([f"- Plan: {metadata['plan_id']}"] if metadata["plan_id"] else []),
                 f"- Stage: {metadata['stage']}",
                 f"- Kind: {metadata['kind']}",
                 f"- Owner: {metadata['owner']}",
@@ -89,12 +92,31 @@ def main() -> int:
     task_id = sys.argv[1]
     try:
         task = load_task(task_id)
+        if str(task.get("status", "")) == "done":
+            print(f"[FAIL] Refusing to create a new run for completed task: {task_id}")
+            return 1
+        if str(task.get("status", "")) == "blocked":
+            print(f"[FAIL] Refusing to create a run for blocked task: {task_id}")
+            return 1
+
+        kind = str(task.get("kind", ""))
+        if kind in {"implementation", "experiment", "debug", "validation"}:
+            plan_id = str(task.get("plan_id", ""))
+            if not plan_id:
+                print(f"[FAIL] Execution task has no plan_id: {task_id}")
+                return 1
+            plans = {plan.id: plan for plan in load_plans()}
+            reviews = load_plan_reviews()
+            plan = plans.get(plan_id)
+            if plan is None:
+                print(f"[FAIL] Execution task references unknown plan: {plan_id}")
+                return 1
+            evaluation = evaluate_plan(plan, reviews)
+            if evaluation.outcome != "approved":
+                print(f"[FAIL] Execution task plan is not approved yet: {plan_id} [{evaluation.outcome}]")
+                return 1
     except StateParseError as exc:
         print(f"[FAIL] {exc}")
-        return 1
-
-    if str(task.get("status", "")) == "done":
-        print(f"[FAIL] Refusing to create a new run for completed task: {task_id}")
         return 1
 
     run_dir = create_run(task)

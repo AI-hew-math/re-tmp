@@ -24,16 +24,18 @@ tasks:
       - .github/workflows/validate.yml
   - id: TASK-BOOTSTRAP
     title: Complete project onboarding and local site configuration
+    plan_id: PLAN-BOOTSTRAP-001
     stage: scoping
     kind: research
-    status: pending
+    status: blocked
     owner: codex
     reviewer: human
     updated_at: 2026-03-18
     why: We need a concrete project question, cluster choice, and data location before safe automated research can start.
     success: Onboarding is complete and the first research question is written down in durable project state.
     next_action: Create configs/site.yaml with scripts/setup.py and confirm cluster, dataset, and initial research objective.
-    blockers: []
+    blockers:
+      - PLAN-BOOTSTRAP-001 must be approved before this task advances
     validation:
       - Confirm configs/site.yaml exists
       - Confirm research question is recorded in memory/DECISIONS.md or a new task

@@ -6,10 +6,11 @@
 - Run `python scripts/orchestrate.py`
 - Run `python scripts/check_task_quality.py`
 - Run `python scripts/review_gate.py`
+- Create or inspect a task run with `python scripts/run_task.py TASK-XXXX`
 
 ## Current Focus
-- Harden the fast-approval workflow so research can move quickly without drifting
+- Use task-level run artifacts to execute research safely without a giant end-to-end pipeline
 
 ## Next Actions
 - Finish project-specific onboarding and first real research task
-- Start using verdicts and gate scripts before marking tasks or claims complete
+- Start using `runs/` alongside verdicts before marking important work complete

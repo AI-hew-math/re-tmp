@@ -1,5 +1,6 @@
 ﻿id: TASK-XXXX
 title: Short task title
+stage: scoping
 kind: research
 status: pending
 owner: codex

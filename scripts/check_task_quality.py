@@ -7,7 +7,18 @@ VALID_TASK_KINDS = {"research", "implementation", "experiment", "debug", "valida
 VALID_TASK_STATUS = {"pending", "ready", "in_progress", "blocked", "done"}
 VALID_OWNERS = {"codex", "claude", "human", "shared", "unassigned"}
 VALID_CLAIM_STATUS = {"provisional", "supported", "rejected", "needs_review"}
-
+VALID_STAGES = {
+    "scoping",
+    "literature",
+    "hypothesis",
+    "design",
+    "execution",
+    "analysis",
+    "writing",
+    "review",
+    "archive",
+}
+VALID_VERDICT_DECISIONS = {"proceed", "refine", "pivot", "reject", "keep_open"}
 
 
 def main() -> int:
@@ -17,12 +28,14 @@ def main() -> int:
     try:
         tasks = load_state_items("tasks.yaml", "tasks")
         claims = load_state_items("claims.yaml", "claims")
+        verdicts = load_state_items("verdicts.yaml", "verdicts")
     except StateParseError as exc:
         print(f"[FAIL] {exc}")
         return 1
 
     for task in tasks:
         task_id = str(task.get("id", "UNKNOWN"))
+        stage = str(task.get("stage", ""))
         kind = str(task.get("kind", ""))
         status = str(task.get("status", ""))
         owner = str(task.get("owner", ""))
@@ -32,6 +45,8 @@ def main() -> int:
         validation = as_list(task.get("validation", []))
         links = as_list(task.get("links", []))
 
+        if stage not in VALID_STAGES:
+            errors.append(f"{task_id}: invalid stage '{stage}'")
         if kind not in VALID_TASK_KINDS:
             errors.append(f"{task_id}: invalid kind '{kind}'")
         if status not in VALID_TASK_STATUS:
@@ -69,6 +84,12 @@ def main() -> int:
             errors.append(f"{claim_id}: invalid reviewer '{reviewer}'")
         if confidence not in {"low", "medium", "high"}:
             warnings.append(f"{claim_id}: confidence should be low, medium, or high")
+
+    for verdict in verdicts:
+        verdict_id = str(verdict.get("id", "UNKNOWN"))
+        decision = str(verdict.get("decision", ""))
+        if decision not in VALID_VERDICT_DECISIONS:
+            errors.append(f"{verdict_id}: invalid verdict decision '{decision}'")
 
     for warning in warnings:
         print(f"[WARN] {warning}")

@@ -12,6 +12,7 @@ Durable memory is split into:
 - `state/`: machine-readable ledgers for tasks, claims, verdicts, and session packets
 - `experiments/`: experiment design and result record
 - `literature/`: external evidence and paper notes
+- `runs/`: per-task execution artifacts, logs, and review notes
 
 ## Recommended Role Split
 
@@ -52,6 +53,7 @@ Tracks open work.
 Required fields per task:
 - `id`
 - `title`
+- `stage`
 - `kind`
 - `status`
 - `owner`
@@ -65,6 +67,17 @@ Recommended fields:
 - `blockers`
 - `validation`
 - `links`
+
+Recommended task stages:
+- `scoping`
+- `literature`
+- `hypothesis`
+- `design`
+- `execution`
+- `analysis`
+- `writing`
+- `review`
+- `archive`
 
 ### `state/claims.yaml`
 Tracks research claims and evidence.
@@ -90,16 +103,33 @@ Each verdict should answer:
 - who reviewed it
 - what follow-up task was created
 
+Recommended decisions:
+- `proceed`
+- `refine`
+- `pivot`
+- `reject`
+- `keep_open`
+
+### `runs/`
+Tracks execution artifacts for a specific task run.
+
+A run directory should contain:
+- `run.json`
+- `plan.md`
+- `review.md`
+- `logs/`
+
 ## Workflow Loop
 
 1. Codex reads `memory/` and `state/`.
 2. Codex selects the highest-value ready task.
-3. Codex assigns execution to Claude when code or validation work is needed.
-4. Claude performs the task and emits a compact result packet.
-5. Codex reviews the packet and evidence.
-6. Codex updates claims, verdicts, and next tasks.
-7. Gate scripts are run before advancing important items.
-8. The loop repeats.
+3. Codex creates a run scaffold when the task needs executable artifacts.
+4. Codex assigns execution to Claude when code or validation work is needed.
+5. Claude performs the task and records outputs in the run directory.
+6. Codex reviews the packet and evidence.
+7. Codex updates claims, verdicts, and next tasks.
+8. Gate scripts are run before advancing important items.
+9. The loop repeats.
 
 ## Safety Rules
 
@@ -111,9 +141,10 @@ Each verdict should answer:
 
 See also:
 - `docs/fast-approval-gates.md`
+- `docs/run-based-task-execution.md`
 - `docs/testing-the-research-system.md`
 
 ## Immediate Next Step
 
 Use `python scripts/orchestrate.py` to inspect the current state and generate the next recommended research action.
-Then run the gate scripts before marking important work complete.
+Then create a run with `python scripts/run_task.py TASK-XXXX` when the task needs execution artifacts.

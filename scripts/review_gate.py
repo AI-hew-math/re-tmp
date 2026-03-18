@@ -23,6 +23,7 @@ def main() -> int:
         kind = str(task.get("kind", ""))
         validation = as_list(task.get("validation", []))
         reviewer = str(task.get("reviewer", ""))
+        stage = str(task.get("stage", ""))
 
         if status == "done" and kind in {"implementation", "experiment", "debug", "validation"} and not validation:
             errors.append(f"{task_id}: done execution task has no validation plan recorded")
@@ -30,6 +31,8 @@ def main() -> int:
             errors.append(f"{task_id}: done task must have a verdict entry")
         if reviewer in {"", "unassigned"}:
             errors.append(f"{task_id}: every task must have a non-unassigned reviewer")
+        if stage == "":
+            errors.append(f"{task_id}: every task must have a stage")
 
     for claim in claims:
         claim_id = str(claim.get("id", "UNKNOWN"))

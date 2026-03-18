@@ -10,6 +10,7 @@ from state_utils import as_bool, as_list, load_state_items, StateParseError
 class Task:
     id: str
     title: str
+    stage: str
     kind: str
     status: str
     owner: str
@@ -43,6 +44,7 @@ def load_tasks() -> list[Task]:
         Task(
             id=str(item.get("id", "")),
             title=str(item.get("title", "")),
+            stage=str(item.get("stage", "")),
             kind=str(item.get("kind", "")),
             status=str(item.get("status", "")),
             owner=str(item.get("owner", "")),
@@ -137,6 +139,7 @@ def main() -> int:
     print("# Research Orchestrator Summary")
     print()
     print(f"Next task: {next_task.id} - {next_task.title}")
+    print(f"Stage: {next_task.stage}")
     print(f"Kind: {next_task.kind}")
     print(f"Current status: {next_task.status}")
     print(f"Recorded owner: {next_task.owner}")

@@ -67,3 +67,18 @@
 
 **Implications**: Future tasks, claims, and verdicts should be created in the richer format, and review gates should be run before meaningful items are advanced.
 
+
+### 2026-03-18: Add per-task run artifacts instead of a monolithic pipeline
+
+**Context**: Large autonomous research pipelines are useful references, but this project needs smaller, inspectable loops that fit the 	asks/claims/verdicts model.
+
+**Decision**: Add a lightweight uns/ directory and scripts/run_task.py so each meaningful task can get its own artifact folder, plan, logs, and review notes.
+
+**Reasoning**: This keeps the system inspectable, preserves evidence between agents, and imports the best part of pipeline-based systems without forcing a huge single-shot orchestrator.
+
+**Alternatives Rejected**:
+- Option A: Keep everything in chat and state files only. This makes execution evidence harder to inspect.
+- Option B: Build a full AutoResearchClaw-style monolithic runner immediately. Too much complexity for the current phase.
+
+**Implications**: Future execution-heavy tasks should be scaffolded into uns/, and verdict decisions should use proceed/refine/pivot/reject/keep_open.
+

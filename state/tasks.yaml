@@ -1,6 +1,7 @@
 ﻿tasks:
   - id: TASK-BOOTSTRAP
     title: Complete project onboarding and local site configuration
+    stage: scoping
     kind: research
     status: pending
     owner: codex

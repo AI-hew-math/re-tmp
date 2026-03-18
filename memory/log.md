@@ -54,3 +54,14 @@
 ### Notes
 - The next strong test is to run one real research task end-to-end through the new gates
 
+
+## 2026-03-18 (Run Artifacts)
+
+### Done
+- Added task stage metadata and richer verdict decision vocabulary
+- Added uns/ and scripts/run_task.py for per-task artifact scaffolding
+- Documented the smaller run-based execution model as the safer alternative to a giant autonomous pipeline
+
+### Notes
+- A sample run scaffold was created for TASK-BOOTSTRAP to validate the workflow
+

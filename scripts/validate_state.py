@@ -11,7 +11,7 @@ CAPSULES_DIR = ROOT / "state" / "session_capsules"
 
 
 TASK_REQUIRED = {
-    "id", "title", "kind", "status", "owner", "reviewer", "updated_at", "why", "success", "next_action"
+    "id", "title", "stage", "kind", "status", "owner", "reviewer", "updated_at", "why", "success", "next_action"
 }
 CLAIM_REQUIRED = {
     "id", "claim", "status", "evidence", "updated_at", "confidence", "review_required", "reviewer", "notes"
@@ -19,7 +19,6 @@ CLAIM_REQUIRED = {
 VERDICT_REQUIRED = {
     "id", "reviewed_item", "decision", "status", "rationale", "evidence", "updated_at", "reviewer", "follow_up"
 }
-
 
 
 def validate_items(filename: str, section_name: str, required: set[str]) -> list[str]:
@@ -32,12 +31,10 @@ def validate_items(filename: str, section_name: str, required: set[str]) -> list
     return errors
 
 
-
 def validate_capsules_dir() -> list[str]:
     if CAPSULES_DIR.exists() and CAPSULES_DIR.is_dir():
         return []
     return ["state/session_capsules/ must exist"]
-
 
 
 def main() -> int:
